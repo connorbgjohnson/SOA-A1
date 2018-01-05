@@ -1,0 +1,18 @@
+2018-01-02 14:53:09 SOASocketListener : Rolling Over LISTENER Log
+2018-01-02 14:53:09 SOASocketListener : Log File Rename Failed
+2018-01-02 14:53:09 -----------------------------------------------
+2018-01-02 14:53:09    SOA Register Online ... 2018-01-02 
+2018-01-02 14:53:09 -----------------------------------------------
+2018-01-02 14:53:09   >>> SOARegisterListener Active - Listening for messages from Thortons-SOA on Socket:3128
+2018-01-02 15:19:30 SOASocketListener : Rolling Over LISTENER Log
+2018-01-02 15:19:30 SOASocketListener : Log File Rename Failed
+2018-01-02 15:19:30 -----------------------------------------------
+2018-01-02 15:19:30    SOA Register Online ... 2018-01-02 
+2018-01-02 15:19:30 -----------------------------------------------
+2018-01-02 15:19:30   >>> SOARegisterListener Active - Listening for messages from Thortons-SOA on Socket:3128
+2018-01-02 15:31:14 SOASocketListener : Rolling Over LISTENER Log
+2018-01-02 15:31:14 SOASocketListener : Log File Rename Failed
+2018-01-02 15:31:14 -----------------------------------------------
+2018-01-02 15:31:14    SOA Register Online ... 2018-01-02 
+2018-01-02 15:31:14 -----------------------------------------------
+2018-01-02 15:31:14   >>> SOARegisterListener Active - Listening for messages from Thortons-SOA on Socket:3128

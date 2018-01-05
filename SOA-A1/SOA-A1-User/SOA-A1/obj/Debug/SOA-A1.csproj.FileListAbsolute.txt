@@ -1,0 +1,10 @@
+C:\Users\Public\Documents\Visual Studio 2017\Projects\SOA-A1\SOA-A1\bin\Debug\SOA-A1.exe.config
+C:\Users\Public\Documents\Visual Studio 2017\Projects\SOA-A1\SOA-A1\bin\Debug\SOA-A1.exe
+C:\Users\Public\Documents\Visual Studio 2017\Projects\SOA-A1\SOA-A1\bin\Debug\SOA-A1.pdb
+C:\Users\Public\Documents\Visual Studio 2017\Projects\SOA-A1\SOA-A1\obj\Debug\SOA-A1.csprojResolveAssemblyReference.cache
+C:\Users\Public\Documents\Visual Studio 2017\Projects\SOA-A1\SOA-A1\obj\Debug\SOA_A1.ServiceSelection.resources
+C:\Users\Public\Documents\Visual Studio 2017\Projects\SOA-A1\SOA-A1\obj\Debug\SOA_A1.Properties.Resources.resources
+C:\Users\Public\Documents\Visual Studio 2017\Projects\SOA-A1\SOA-A1\obj\Debug\SOA-A1.csproj.GenerateResource.Cache
+C:\Users\Public\Documents\Visual Studio 2017\Projects\SOA-A1\SOA-A1\obj\Debug\SOA-A1.csproj.CoreCompileInputs.cache
+C:\Users\Public\Documents\Visual Studio 2017\Projects\SOA-A1\SOA-A1\obj\Debug\SOA-A1.exe
+C:\Users\Public\Documents\Visual Studio 2017\Projects\SOA-A1\SOA-A1\obj\Debug\SOA-A1.pdb
