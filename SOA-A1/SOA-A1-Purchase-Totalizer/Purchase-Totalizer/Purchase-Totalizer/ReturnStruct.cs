@@ -8,14 +8,16 @@ namespace Purchase_Totalizer
 {
     public struct ReturnStruct
     {
-        public double Sub_total_amount;
-        public double PST_amount;
-        public double HST_amount;
-        public double GST_amount;
-        public double Total_purchase_amount;
+        public bool Valid;
+        public decimal Sub_total_amount;
+        public decimal PST_amount;
+        public decimal HST_amount;
+        public decimal GST_amount;
+        public decimal Total_purchase_amount;
 
-        public ReturnStruct(double sub, double pst, double hst, double gst, double total)
+        public ReturnStruct(bool valid, decimal sub, decimal pst, decimal hst, decimal gst, decimal total)
         {
+            Valid = valid;
             Sub_total_amount = sub;
             PST_amount = pst;
             HST_amount = hst;
