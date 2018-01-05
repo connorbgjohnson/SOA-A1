@@ -25,7 +25,6 @@ namespace Purchase_Totalizer
             {
                 hst = decimal.Multiply(value, 0.15m);
                 total = value + hst;
-
             }
             else if (locationCode == "NB")
             {

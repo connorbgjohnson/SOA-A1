@@ -44,6 +44,7 @@
             this.txtPort.Name = "txtPort";
             this.txtPort.Size = new System.Drawing.Size(100, 20);
             this.txtPort.TabIndex = 0;
+            this.txtPort.Text = "3128";
             // 
             // lblPort
             // 
