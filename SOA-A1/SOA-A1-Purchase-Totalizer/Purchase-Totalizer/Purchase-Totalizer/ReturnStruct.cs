@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Purchase_Totalizer
 {
-    class ReturnStruct
+    public struct ReturnStruct
     {
         public double Sub_total_amount;
         public double PST_amount;
