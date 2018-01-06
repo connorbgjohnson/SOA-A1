@@ -9,8 +9,6 @@
 
 namespace PostalCode
 {
-	///This uses the other helper functions to perform all the postal code validation.
-	///It returns a bool value stating the success and the additional info is passed using an "out" parameter.
 	bool validate(string provinceCode, string postalCode, string &specialNotes)
 	{
 		bool isPostalCodeValid = false;
@@ -63,12 +61,11 @@ namespace PostalCode
 		return isPostalCodeValid;
 	}
 
-	///Format input to upper case.
 	string formatToUpper(string province)
 	{
 		string upperProvince = "";
 
-		for (int i = 0; i < province.length(); i++)
+		for (unsigned int i = 0; i < province.length(); i++)
 		{
 			upperProvince += toupper(province[i]);
 		}
@@ -76,7 +73,6 @@ namespace PostalCode
 		return upperProvince;
 	}
 
-	///Format the postal code better for parsing.
 	string formatRemoveSpace(string code)
 	{
 		if (code[3] == ' ' && code.length() > 5)
@@ -87,7 +83,6 @@ namespace PostalCode
 		return code;
 	}
 
-	///Ensures the postal code is formatted correctly.
 	bool validatePostalCodeFormat(string code)
 	{
 		bool isValid = false;
@@ -101,7 +96,6 @@ namespace PostalCode
 		return isValid;
 	}
 
-	///Validates that the postal code works in the context of the applications requirements.
 	bool validatePostalCode(string province, string code)
 	{
 		bool isValid = false;
@@ -113,8 +107,13 @@ namespace PostalCode
 			if (c == "A0" ||
 				c == "A1" ||
 				c == "A2" ||
+				c == "A3" ||
+				c == "A4" ||
 				c == "A5" ||
-				c == "A8")
+				c == "A6" ||
+				c == "A7" ||
+				c == "A8" ||
+				c == "A9")
 			{
 				isValid = true;
 			}
@@ -131,6 +130,8 @@ namespace PostalCode
 				c == "B4" ||
 				c == "B5" ||
 				c == "B6" ||
+				c == "B7" ||
+				c == "B8" ||
 				c == "B9")
 			{
 				isValid = true;
@@ -141,7 +142,8 @@ namespace PostalCode
 		if (province == "NB")
 		{
 			string c = code.substr(0, 2);
-			if (c == "E1" ||
+			if (c == "E0" ||
+				c == "E1" ||
 				c == "E2" ||
 				c == "E3" ||
 				c == "E4" ||
@@ -160,7 +162,15 @@ namespace PostalCode
 		{
 			string c = code.substr(0, 2);
 			if (c == "C0" ||
-				c == "C1")
+				c == "C1" ||
+				c == "C2" ||
+				c == "C3" ||
+				c == "C4" ||
+				c == "C5" ||
+				c == "C6" ||
+				c == "C7" ||
+				c == "C8" ||
+				c == "C9" )
 			{
 				isValid = true;
 			}
@@ -185,7 +195,8 @@ namespace PostalCode
 				c == "H2" || 
 				c == "H3" || 
 				c == "H4" || 
-				c == "H5" || 
+				c == "H5" ||
+				c == "H6" ||
 				c == "H7" || 
 				c == "H8" || 
 				c == "H9" ||
@@ -211,7 +222,9 @@ namespace PostalCode
 			if (c == "K0" ||
 				c == "K1" ||
 				c == "K2" ||
+				c == "K3" ||
 				c == "K4" ||
+				c == "K5" ||
 				c == "K6" ||
 				c == "K7" ||
 				c == "K8" ||
@@ -226,9 +239,11 @@ namespace PostalCode
 				c == "L7" ||
 				c == "L8" ||
 				c == "L9" ||
-				c == "M1" || 
+				c == "M0" ||
+				c == "M1" ||
 				c == "M2" || 
-				c == "M3" || 
+				c == "M3" ||
+				c == "M4" ||
 				c == "M5" || 
 				c == "M6" || 
 				c == "M7" || 
@@ -282,11 +297,14 @@ namespace PostalCode
 		{
 			string c = code.substr(0, 2);
 			if (c == "S0" ||
+				c == "S1" ||
 				c == "S2" ||
 				c == "S3" || 
-				c == "S4" || 
+				c == "S4" ||
+				c == "S5" ||
 				c == "S6" || 
-				c == "S7" || 
+				c == "S7" ||
+				c == "S8" ||
 				c == "S9")
 			{
 				isValid = true;
@@ -341,6 +359,19 @@ namespace PostalCode
 			{
 				isValid = true;
 			}
+
+			c = code.substr(0, 2);
+			if (c == "Y2" ||
+				c == "Y3" ||
+				c == "Y4" ||
+				c == "Y5" ||
+				c == "Y6" ||
+				c == "Y7" ||
+				c == "Y8" ||
+				c == "Y9")
+			{
+				isValid = true;
+			}
 		}
 
 		//Northwest Territories
@@ -350,6 +381,19 @@ namespace PostalCode
 			if (c == "X0E" ||
 				c == "X0F" ||
 				c == "X1A")
+			{
+				isValid = true;
+			}
+
+			c = code.substr(0, 2);
+			if (c == "X2" ||
+				c == "X3" ||
+				c == "X4" ||
+				c == "X5" ||
+				c == "X6" ||
+				c == "X7" ||
+				c == "X8" ||
+				c == "X9")
 			{
 				isValid = true;
 			}
@@ -370,7 +414,6 @@ namespace PostalCode
 		return isValid;
 	}
 
-	///Pull out a special message if it exists.
 	string getSpecialMessage(string province, string code)
 	{
 		string msg = "";
@@ -679,7 +722,6 @@ namespace PostalCode
 		return msg;
 	}
 
-	///Returns if the province code exists or not.
 	bool validateProvince(string province)
 	{
 		bool foundProvince = false;
@@ -704,13 +746,12 @@ namespace PostalCode
 		return foundProvince;
 	}
 
-	///Check if the error is due to incorrect errors.
-	bool checkIfLetterError(string code)
+	bool checkIfCodeStructureError(string code)
 	{
 		bool isValid = true;
 
-		regex r("/[DFIOQU]/g");
-		if (regex_match(code, r))
+		regex r("[A-Z][1-9][A-Z][1-9][A-Z][1-9]");
+		if (!regex_match(code, r))
 		{
 			isValid = false;
 		}
@@ -718,13 +759,12 @@ namespace PostalCode
 		return isValid;
 	}
 
-	///Check if the error is due to incorrect structure.
-	bool checkIfCodeStructureError(string code)
+	bool checkIfLetterError(string code)
 	{
 		bool isValid = true;
 
-		regex r("[A-Z][1-9][A-Z][1-9][A-Z][1-9]");
-		if (!regex_match(code, r))
+		regex r("/[DFIOQU]/g");
+		if (regex_match(code, r))
 		{
 			isValid = false;
 		}

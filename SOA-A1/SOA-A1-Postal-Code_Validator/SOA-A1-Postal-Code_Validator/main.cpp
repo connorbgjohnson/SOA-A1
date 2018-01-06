@@ -20,5 +20,5 @@ int main(int, char*[])
 	bool result = validate(provinceCode, postalCode, specialNotes);
 
 	printf(specialNotes.c_str());
-
+	printf("Over.");
 }
