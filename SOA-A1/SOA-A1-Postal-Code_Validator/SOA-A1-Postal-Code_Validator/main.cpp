@@ -1,3 +1,9 @@
+///Project: SOA-A1-Postal-Code_Validator
+///File: PostalCode.cpp
+///Date: 2018/01/04
+///Author: Lauchlin Morrison
+///Application runs as a service to be queried for canadian postal code validation.
+
 
 #include "PostalCode.h"
 

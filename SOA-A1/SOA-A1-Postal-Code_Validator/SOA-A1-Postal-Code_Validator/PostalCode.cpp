@@ -1,7 +1,11 @@
+///Project: SOA-A1-Postal-Code_Validator
+///File: PostalCode.cpp
+///Date: 2018/01/04
+///Author: Lauchlin Morrison
+///File containing all the function definitions for validating postal codes.
+
 #include "PostalCode.h"
-
 #include <regex>
-
 
 namespace PostalCode
 {
@@ -440,8 +444,183 @@ namespace PostalCode
 
 			if (c == "L")
 			{
-
+				msg = "Central Ontario";
 			}
+
+			if (c == "M")
+			{
+				msg = "Toronto Area";
+			}
+
+			if (c == "N")
+			{
+				msg = "Western Ontario";
+			}
+
+			if (c == "P")
+			{
+				msg = "Northern Ontario";
+			}
+
+			c = code.substr(0, 2);
+			if (c == "K0" ||
+				c == "L0" ||
+				c == "N0" ||
+				c == "P0")
+			{
+				msg = "Rural Ontario";
+			}
+
+			if (c == "K3" ||
+				c == "K5" ||
+				c == "M0" ||
+				c == "M4" ||
+				c == "M6")
+			{
+				msg = "Wanna be Ontario";
+			}
+
+			c = code.substr(0, 3);
+			if (c == "K1A")
+			{
+				msg = "Government of Canada";
+			}
+
+			if (c == "M7A")
+			{
+				msg = "Queen's Park";
+			}
+		}
+
+		//Manitoba
+		if (province == "MB")
+		{
+			string c = code.substr(0, 2);
+			if (c == "R0")
+			{
+				msg = "Rural Manitoba";
+			}
+
+			if (c == "R2" ||
+				c == "R3")
+			{
+				msg = "Winnipeg Area";
+			}
+		}
+
+		//Saskatchewan
+		if (province == "SK")
+		{
+			string c = code.substr(0, 2);
+			if (c == "S0")
+			{
+				msg = "Rural Saskatchewan";
+			}
+
+			if (c == "S7")
+			{
+				msg = "Saskatoon Area";
+			}
+
+			if (c == "S1" ||
+				c == "S5" ||
+				c == "S8")
+			{
+				msg = "Wanna be Saskatchewan";
+			}
+		}
+
+		//Alberta
+		if (province == "AB")
+		{
+			string c = code.substr(0, 2);
+			if (c == "T0")
+			{
+				msg = "Rural Alberta";
+			}
+
+			if (c == "T5" ||
+				c == "T6")
+			{
+				msg = "Edmonton Area";
+			}
+
+			if (c == "T2" ||
+				c == "T3")
+			{
+				msg = "Calgary Area";
+			}
+		}
+
+		//British Columbia
+		if (province == "BC")
+		{
+			string c = code.substr(0, 2);
+			if (c == "V0")
+			{
+				msg = "Rural British Columbia";
+			}
+		}
+
+		//Yukon
+		if (province == "YT")
+		{
+			string c = code.substr(0, 2);
+			if (c == "Y0")
+			{
+				msg = "Remote NWT Areas";
+			}
+
+			if (c == "Y2" ||
+				c == "Y3" ||
+				c == "Y4" ||
+				c == "Y5" ||
+				c == "Y6" ||
+				c == "Y7" ||
+				c == "Y8" ||
+				c == "Y9")
+			{
+				msg = "Wanna be Yukon";
+			}
+
+			c = code.substr(0, 3);
+			if (c == "Y1A")
+			{
+				msg = "Whitehorse";
+			}
+		}
+
+		//Northwest Territories
+		if (province == "NT")
+		{
+			string c = code.substr(0, 2);
+			if (c == "X0")
+			{
+				msg = "Remote NWT Areas";
+			}
+
+			if (c == "X2" ||
+				c == "X3" ||
+				c == "X4" ||
+				c == "X5" ||
+				c == "X6" ||
+				c == "X7" ||
+				c == "X8" ||
+				c == "X9")
+			{
+				msg = "Wanna be Yukon";
+			}
+
+			c = code.substr(0, 3);
+			if (c == "X1A")
+			{
+				msg = "Yellowknife";
+			}
+		}
+
+		if (province == "NU")
+		{
+			msg = "Everything is remote in Nunavut";
 		}
 
 		return msg;
@@ -470,6 +649,34 @@ namespace PostalCode
 		}
 
 		return foundProvince;
+	}
+
+	///Check if the error is due to incorrect errors.
+	bool checkIfLetterError(string code)
+	{
+		bool isValid = true;
+
+		regex r("/[DFIOQU]/g");
+		if (regex_match(code, r))
+		{
+			isValid = false;
+		}
+
+		return isValid;
+	}
+
+	///Check if the error is due to incorrect structure.
+	bool checkIfCodeStructure(string code)
+	{
+		bool isValid = true;
+
+		regex r("[A-Z][1-9][A-Z][1-9][A-Z][1-9]");
+		if (!regex_match(code, r))
+		{
+			isValid = false;
+		}
+
+		return isValid;
 	}
 
 }

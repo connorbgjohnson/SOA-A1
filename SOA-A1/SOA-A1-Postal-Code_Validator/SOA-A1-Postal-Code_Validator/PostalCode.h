@@ -1,5 +1,10 @@
-#include <string>
+///Project: SOA-A1-Postal-Code_Validator
+///File: PostalCode.cpp
+///Date: 2018/01/04
+///Author: Lauchlin Morrison
+///File contains all the function declarations for validating postal codes.
 
+#include <string>
 #pragma once
 
 using namespace std;
@@ -12,4 +17,6 @@ namespace PostalCode
 	bool validatePostalCodeFormat(string code);
 	bool validatePostalCode(string province, string code);
 	string getSpecialMessage(string province, string code);
+	bool checkIfCodeStructure(string code);
+	bool checkIfLetterError(string code);
 }
