@@ -1,8 +1,50 @@
 #include "PostalCode.h"
 
+#include <regex>
+
+
 namespace PostalCode
 {
+	///Format input to upper case.
+	string formatToUpper(string province)
+	{
+		string upperProvince = "";
 
+		std::locale loc;
+		for (int i = province.length(); i < province.length(); i++)
+		{
+			upperProvince += toupper(province[i], loc);
+		}
+
+		return upperProvince;
+	}
+
+	///Format the postal code better for parsing.
+	string formatPostalCode(string code)
+	{
+		if (code[3] == ' ' && code.length > 5)
+		{
+			code = code.substr(0, 3) + code.substr(4, 3);
+		}
+
+		return formatToUpper(code);
+	}
+
+	///Ensures the postal code is formatted correctly.
+	bool validatePostalCodeFormat(string code)
+	{
+		bool isValid = false;
+
+		regex postalCode_regex("[ABCEGHJKLMNPRSTVXY][0-9][ABCEGHJKLMNPRSTVWXYZ][0-9][ABCEGHJKLMNPRSTVWXYZ][0-9]");
+		if (regex_match(code, postalCode_regex))
+		{
+			isValid = true;
+		}
+
+		return isValid;
+	}
+
+	///Validates that the postal code works in the context of the applications requirements.
 	bool validatePostalCode(string province, string code)
 	{
 		bool isValid = false;
@@ -194,6 +236,7 @@ namespace PostalCode
 			}
 		}
 
+		//Alberta
 		if (province == "AB")
 		{
 			string c = code.substr(0, 1);
@@ -212,6 +255,7 @@ namespace PostalCode
 			}
 		}
 
+		//British-Columbia
 		if (province == "BC")
 		{
 			string c = code.substr(0, 1);
@@ -230,6 +274,7 @@ namespace PostalCode
 			}
 		}
 
+		//Yukon
 		if (province == "YT")
 		{
 			string c = code.substr(0, 2);
@@ -241,6 +286,7 @@ namespace PostalCode
 			}
 		}
 
+		//Northwest Territories
 		if (province == "NT")
 		{
 			string c = code.substr(0, 2);
@@ -252,6 +298,7 @@ namespace PostalCode
 			}
 		}
 
+		//Nunavut
 		if (province == "NU")
 		{
 			string c = code.substr(0, 2);
@@ -266,11 +313,136 @@ namespace PostalCode
 		return isValid;
 	}
 
+	///Pull out a special message if it exists.
 	string getSpecialMessage(string province, string code)
 	{
 		string msg = "";
 		
+		//Newfoundland
+		if (province == "NL")
+		{
+			string c = code.substr(0, 2);
+			if (c == "A0")
+			{
+				msg = "Rural Newfoundland";
+			}
 
+			if (c == "A3" ||
+				c == "A4" ||
+				c == "A6" ||
+				c == "A7" ||
+				c == "A9")
+			{
+				msg = "Wanna Be Newfoundland";
+			}
+		}
+
+		//Nova Scotia
+		if (province == "NS")
+		{
+			string c = code.substr(0, 2);
+			if (c == "B0")
+			{
+				msg = "Rural Noa Scotia";
+			}
+
+			if (c == "B7" || c == "B8")
+			{
+				msg = "Wanna Be Nova Scotia";
+			}
+		}
+		
+		//New Brunswick
+		if (province == "NB")
+		{
+			string c = code.substr(0, 2);
+			if (c == "E0")
+			{
+				msg = "Wanna be Rural New Brunswick";
+			}
+		}
+
+		//New Brunswick
+		if (province == "PE")
+		{
+			string c = code.substr(0, 2);
+			if (c == "C0")
+			{
+				msg = "Rural PEI";
+			}
+
+			if (c == "C2" || 
+				c == "C3" || 
+				c == "C4" || 
+				c == "C5" || 
+				c == "C6" || 
+				c == "C7" ||
+				c == "C8" || 
+				c == "C9")
+			{
+				msg = "Wanna be PEI";
+			}
+		}
+
+		//Quebec
+		if (province == "QC")
+		{
+			string c = code.substr(0, 1);
+			if (c == "G")
+			{
+				msg = "Eastern Quebec";
+			}
+
+			if (c == "H")
+			{
+				msg = "Montreal Area";
+			}
+
+			if (c == "J")
+			{
+				msg = "Western / Northern Quebec";
+			}
+
+			c = code.substr(0, 2);
+			if (c == "H6")
+			{
+				msg = "Wanna be Quebec";
+			}
+
+			if (c == "G0" ||
+				c == "H0" ||
+				c == "J0")
+			{
+				msg = "Rural Quebec";
+			}
+
+			c = code.substr(0, 3);
+			if (c == "G1A")
+			{
+				msg = "Provincial Government";
+			}
+
+			c = code.substr(0, 6);
+			if (c == "H0H0H0")
+			{
+				msg = "Santa Claus";
+			}
+		}
+
+		//Ontario
+		if (province == "ON")
+		{
+			string c = code.substr(0, 1);
+			if (c == "K")
+			{
+				msg = "Eastern Ontario";
+			}
+
+			if (c == "L")
+			{
+
+			}
+		}
 
 		return msg;
 	}

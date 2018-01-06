@@ -8,5 +8,8 @@ int main(int, char*[])
 {
 	bool isProvinceValid = validateProvince("NL");
 	bool isValid = validatePostalCode("NL", "asdasd");
+	bool miaow = validatePostalCodeFormat("N2L 1C8");
+	bool miaow2 = validatePostalCodeFormat("N2L1C8");
+	bool miaow3 = validatePostalCodeFormat("N2L YRE");
 
 }
