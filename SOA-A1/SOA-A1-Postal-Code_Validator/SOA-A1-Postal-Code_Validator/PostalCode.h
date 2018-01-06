@@ -11,12 +11,13 @@ using namespace std;
 
 namespace PostalCode
 {
+	bool validate(string provinceCode, string postalCode, string &specialNotes);
 	string formatToUpper(string province);
-	string formatPostalCode(string code);
+	string formatRemoveSpace(string code);
 	bool validateProvince(string province);
 	bool validatePostalCodeFormat(string code);
 	bool validatePostalCode(string province, string code);
 	string getSpecialMessage(string province, string code);
-	bool checkIfCodeStructure(string code);
+	bool checkIfCodeStructureError(string code);
 	bool checkIfLetterError(string code);
 }

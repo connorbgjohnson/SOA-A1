@@ -9,29 +9,82 @@
 
 namespace PostalCode
 {
+	///This uses the other helper functions to perform all the postal code validation.
+	///It returns a bool value stating the success and the additional info is passed using an "out" parameter.
+	bool validate(string provinceCode, string postalCode, string &specialNotes)
+	{
+		bool isPostalCodeValid = false;
+
+		//Format forgivable mistakes.
+		postalCode = formatRemoveSpace(postalCode);
+		provinceCode = formatToUpper(provinceCode);
+
+		if (validateProvince(provinceCode))	//Is the province code correct?
+		{
+			if (validatePostalCodeFormat(postalCode))//Is the postal code formatted correctly?
+			{
+				if (validatePostalCode(provinceCode, postalCode))	//Is the postal code correct according to 
+				{
+					isPostalCodeValid = true;
+					specialNotes = getSpecialMessage(provinceCode, postalCode);
+				}
+				else
+				{
+					specialNotes = "This postal code is not valid.";
+				}
+			}
+			else
+			{
+				//Postal code is not formatted correctly.
+				if (checkIfCodeStructureError(postalCode))
+				{
+					specialNotes = "The postal code is not structured properly";
+				}
+
+				if (checkIfLetterError(postalCode))
+				{
+					if (specialNotes != "")
+					{
+						specialNotes += "and the it is using one or more illegal letters!";
+					}
+					else
+					{
+						specialNotes = "The postal code is using one or more illegal letters!";
+					}
+				}
+			}
+		}
+		else
+		{
+			//Province code is incorrect.
+			specialNotes = "The province code is not correct!";
+		}
+
+		return isPostalCodeValid;
+	}
+
 	///Format input to upper case.
 	string formatToUpper(string province)
 	{
 		string upperProvince = "";
 
-		std::locale loc;
-		for (int i = province.length(); i < province.length(); i++)
+		for (int i = 0; i < province.length(); i++)
 		{
-			upperProvince += toupper(province[i], loc);
+			upperProvince += toupper(province[i]);
 		}
 
 		return upperProvince;
 	}
 
 	///Format the postal code better for parsing.
-	string formatPostalCode(string code)
+	string formatRemoveSpace(string code)
 	{
-		if (code[3] == ' ' && code.length > 5)
+		if (code[3] == ' ' && code.length() > 5)
 		{
 			code = code.substr(0, 3) + code.substr(4, 3);
 		}
 
-		return formatToUpper(code);
+		return code;
 	}
 
 	///Ensures the postal code is formatted correctly.
@@ -56,7 +109,7 @@ namespace PostalCode
 		//Newfound land
 		if (province == "NL")
 		{
-			string c = code.substr(0, 1);
+			string c = code.substr(0, 2);
 			if (c == "A0" ||
 				c == "A1" ||
 				c == "A2" ||
@@ -70,7 +123,7 @@ namespace PostalCode
 		//Nova Scotia
 		if (province == "NS")
 		{
-			string c = code.substr(0, 1);
+			string c = code.substr(0, 2);
 			if (c == "B0" ||
 				c == "B1" ||
 				c == "B2" ||
@@ -87,7 +140,7 @@ namespace PostalCode
 		//New Brunswick
 		if (province == "NB")
 		{
-			string c = code.substr(0, 1);
+			string c = code.substr(0, 2);
 			if (c == "E1" ||
 				c == "E2" ||
 				c == "E3" ||
@@ -105,7 +158,7 @@ namespace PostalCode
 		//Prince Edwards Island
 		if (province == "PE")
 		{
-			string c = code.substr(0, 1);
+			string c = code.substr(0, 2);
 			if (c == "C0" ||
 				c == "C1")
 			{
@@ -116,7 +169,7 @@ namespace PostalCode
 		//Quebec
 		if (province == "QC")
 		{
-			string c = code.substr(0, 1);
+			string c = code.substr(0, 2);
 			if (c == "G0" ||
 				c == "G1" ||
 				c == "G2" ||
@@ -154,7 +207,7 @@ namespace PostalCode
 		//Ontario
 		if (province == "ON")
 		{
-			string c = code.substr(0, 1);
+			string c = code.substr(0, 2);
 			if (c == "K0" ||
 				c == "K1" ||
 				c == "K2" ||
@@ -208,7 +261,7 @@ namespace PostalCode
 		//Manitoba
 		if (province == "MB")
 		{
-			string c = code.substr(0, 1);
+			string c = code.substr(0, 2);
 			if (c == "R0" ||
 				c == "R1" ||
 				c == "R2" || 
@@ -227,7 +280,7 @@ namespace PostalCode
 		//Saskatchewan
 		if (province == "SK")
 		{
-			string c = code.substr(0, 1);
+			string c = code.substr(0, 2);
 			if (c == "S0" ||
 				c == "S2" ||
 				c == "S3" || 
@@ -243,7 +296,7 @@ namespace PostalCode
 		//Alberta
 		if (province == "AB")
 		{
-			string c = code.substr(0, 1);
+			string c = code.substr(0, 2);
 			if (c == "T0" ||
 				c == "T1" || 
 				c == "T2" || 
@@ -262,7 +315,7 @@ namespace PostalCode
 		//British-Columbia
 		if (province == "BC")
 		{
-			string c = code.substr(0, 1);
+			string c = code.substr(0, 2);
 			if (c == "V0" ||
 				c == "V1" ||
 				c == "V2" ||
@@ -281,7 +334,7 @@ namespace PostalCode
 		//Yukon
 		if (province == "YT")
 		{
-			string c = code.substr(0, 2);
+			string c = code.substr(0, 3);
 			if (c == "Y0A" ||
 				c == "Y0B" || 
 				c == "Y1A")
@@ -293,7 +346,7 @@ namespace PostalCode
 		//Northwest Territories
 		if (province == "NT")
 		{
-			string c = code.substr(0, 2);
+			string c = code.substr(0, 3);
 			if (c == "X0E" ||
 				c == "X0F" ||
 				c == "X1A")
@@ -305,7 +358,7 @@ namespace PostalCode
 		//Nunavut
 		if (province == "NU")
 		{
-			string c = code.substr(0, 2);
+			string c = code.substr(0, 3);
 			if (c == "X0A" ||
 				c == "X0B" ||
 				c == "X0C")
@@ -666,7 +719,7 @@ namespace PostalCode
 	}
 
 	///Check if the error is due to incorrect structure.
-	bool checkIfCodeStructure(string code)
+	bool checkIfCodeStructureError(string code)
 	{
 		bool isValid = true;
 
