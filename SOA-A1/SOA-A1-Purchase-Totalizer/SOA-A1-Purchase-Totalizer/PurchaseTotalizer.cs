@@ -82,5 +82,10 @@ namespace SOA_A1_Purchase_Totalizer
 
             return new ReturnStruct(valid, value, pst, hst, gst, total);
         }
+
+        public static decimal MoneyRounding(decimal value)
+        {
+            return value;
+        }
     }
 }
