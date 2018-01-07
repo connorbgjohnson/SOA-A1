@@ -17,7 +17,7 @@ namespace SOA_A1
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new ServiceSelection());
+            Application.Run(new frmConnectTeam());
 
         }
     }
