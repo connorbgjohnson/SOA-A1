@@ -1,4 +1,10 @@
-﻿using System;
+﻿///Project: SOA-A1-Purchase-Totalizer
+///File: PurchaseTotalizer.cs
+///Date: 2018/01/04
+///Author: Lauchlin Morrison
+///Contains PurchaseTotallizer class.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,30 +12,35 @@ using System.Threading.Tasks;
 
 namespace SOA_A1_Purchase_Totalizer
 {
+    /// <summary>
+    /// Class for handling Purchase-Totalizer calculations.
+    /// </summary>
     static class PurchaseTotalizer
     {
-        public static ReturnStruct Calculate(string locationCode, decimal value)
+        /// <summary>
+        /// Calculate tax values based on province.
+        /// </summary>
+        /// <param name="locationCode">Which province to use tax logic from.</param>
+        /// <param name="value">Purchase amount to calculate.</param>
+        /// <returns>A struct containing the price break downs.</returns>
+        public static TaxBreakdown Calculate(string locationCode, decimal value)
         {
             bool valid = true;
             decimal pst = 0;
             decimal hst = 0;
             decimal gst = 0;
-            decimal total = 0;
 
             if(locationCode == "NL")
             {
                 hst = decimal.Multiply(value, 0.13m);
-                total = value + hst;
             }
             else if (locationCode == "NS")
             {
                 hst = decimal.Multiply(value, 0.15m);
-                total = value + hst;
             }
             else if (locationCode == "NB")
             {
                 hst = decimal.Multiply(value, 0.13m);
-                total = value + hst;
             }
             else if (locationCode == "PE")
             {
@@ -80,10 +91,15 @@ namespace SOA_A1_Purchase_Totalizer
                 valid = false;
             }
 
-            return new ReturnStruct(valid, value, pst, hst, gst, total);
+            return new TaxBreakdown(valid, value, pst, hst, gst, value + pst + hst + gst);
         }
 
-        public static decimal MoneyRounding(decimal value)
+        /// <summary>
+        /// Round too monies. *Not implemented yet.*
+        /// </summary>
+        /// <param name="value">Value to round to money.</param>
+        /// <returns>Rounded money value.</returns>
+        private static decimal MoneyRounding(decimal value)
         {
             return value;
         }
