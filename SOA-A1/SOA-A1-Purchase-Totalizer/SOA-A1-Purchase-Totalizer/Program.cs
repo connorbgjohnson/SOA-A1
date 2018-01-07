@@ -17,6 +17,9 @@ namespace SOA_A1_Purchase_Totalizer
 
         static void Main(string[] args)
         {
+			Logging.LogLine("Welcome to the log file.");
+
+
             if(!LoadConfig())
             {
                 Console.WriteLine("Error loading config.");
