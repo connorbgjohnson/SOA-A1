@@ -45,18 +45,38 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MessageBuilder.cs" />
-    <Compile Include="ServiceSelection.cs">
+    <Compile Include="FormBuilder.cs" />
+    <Compile Include="frmSelectedService.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ServiceSelection.Designer.cs">
-      <DependentUpon>ServiceSelection.cs</DependentUpon>
+    <Compile Include="frmSelectedService.Designer.cs">
+      <DependentUpon>frmSelectedService.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmServiceSelection.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmServiceSelection.Designer.cs">
+      <DependentUpon>frmServiceSelection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MessageBuilder.cs" />
+    <Compile Include="MessageParser.cs" />
+    <Compile Include="frmConnectTeam.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmConnectTeam.Designer.cs">
+      <DependentUpon>frmConnectTeam.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TCPHelper.cs" />
-    <EmbeddedResource Include="ServiceSelection.resx">
-      <DependentUpon>ServiceSelection.cs</DependentUpon>
+    <EmbeddedResource Include="frmConnectTeam.resx">
+      <DependentUpon>frmConnectTeam.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmSelectedService.resx">
+      <DependentUpon>frmSelectedService.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmServiceSelection.resx">
+      <DependentUpon>frmServiceSelection.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
