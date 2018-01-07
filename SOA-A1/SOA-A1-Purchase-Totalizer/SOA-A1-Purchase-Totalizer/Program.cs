@@ -10,30 +10,62 @@ namespace SOA_A1_Purchase_Totalizer
     class Program
     {
         const string CONFIG_FILE_PATH = "purchase_totalizer.config";
-        const string TAG_NAME = "GIORP-TOTAL";
+
+        //From config.
+        static string tagName = "GIORP-TOTAL";
+        static string teamName = "Wesnet";
+
+//teamId=
+//tagName=
+//serviceName=
+//securityLevel=
+//numArgs=
+//numResponses=
+//description=
+//registryIP=
+//registryPort=
 
         //List all the variables needed by the application here. Moving things to config files can be done later.
         //string fasdfasdf
 
         static void Main(string[] args)
         {
-			Logging.LogLine("Welcome to the log file.");
-
-
+            //Try and load configuration file.
             if(!LoadConfig())
             {
-                Console.WriteLine("Error loading config.");
+                //Log startup message.
+                Logging.LogLine("=================================================================");
+                Logging.LogLine(string.Format("Team\t: {0}", teamName));
+                Logging.LogLine(string.Format("Tag-name: {0}", tagName));
+                Logging.LogLine("Service: " + "purchaseTotalizer");
+                Logging.LogLine("=================================================================");
+                Logging.LogLine("---");
+
+                //Publish service to registry.
+
+
+                //Start waiting for messages.
+
+                //Probably do something about ending the app.
+
+
+
+
+                //This is an example.
+                //TaxBreakdown test = PurchaseTotalizer.Calculate("AB", 899.99m);
+                //Console.WriteLine("IsValid: {0}\nSub Total: {1}\nPST: {2}\nHST: {3}\nGST: {4}\nTotal: {5}",
+                //    test.Valid,
+                //    test.Sub_total_amount,
+                //    test.PST_amount,
+                //    test.HST_amount,
+                //    test.GST_amount,
+                //    test.Total_purchase_amount);
+
+
             }
             else
             {
-                TaxBreakdown test = PurchaseTotalizer.Calculate("AB", 899.99m);
-                Console.WriteLine("IsValid: {0}\nSub Total: {1}\nPST: {2}\nHST: {3}\nGST: {4}\nTotal: {5}",
-                    test.Valid,
-                    test.Sub_total_amount,
-                    test.PST_amount,
-                    test.HST_amount,
-                    test.GST_amount,
-                    test.Total_purchase_amount);
+                Console.WriteLine("Error loading config file.");
             }
         }
 
@@ -91,7 +123,7 @@ registryIP=
 registryPort=
 ";
             File.WriteAllText(CONFIG_FILE_PATH, configFileString);
-            Console.WriteLine("Created config file as none existed.");
+            Console.WriteLine("Created config file as none existed. Please fill it out.");
         }
 
     }

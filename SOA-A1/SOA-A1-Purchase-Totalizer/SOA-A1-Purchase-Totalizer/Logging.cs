@@ -29,22 +29,18 @@ namespace SOA_A1_Purchase_Totalizer
 		{
 			//Apppend datetime to the front of the message.
 			message = DateTime.Now.ToString("yyyy-mm-dd hh:mm:ss") + " " + message;
-			//message = 
-
 			try
 			{
-				using (FileStream file = File.OpenWrite(PATH))
+				using (StreamWriter file = File.AppendText(PATH))
 				{
-					Encoding encoding = Encoding.UTF8;
-					file.Write(encoding.GetBytes(message), 0, encoding.GetByteCount(message));
+                    file.WriteLine(message);
 				}
 			}
 			catch(Exception ex)
 			{
-				//Do nothing. We don't want to kill our service if logging is not working.
+				//Do nothing. We don't want to kill our service if logging is failing.
 			}
 		}
-
 
 	}
 }
