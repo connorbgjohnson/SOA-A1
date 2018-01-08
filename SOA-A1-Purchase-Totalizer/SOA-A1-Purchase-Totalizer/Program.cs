@@ -34,7 +34,8 @@ namespace SOA_A1_Purchase_Totalizer
 
         static void Main(string[] args)
         {
-
+            Socket registrySocket = null;
+            Socket clientSocket = null;
 
             //Try and load configuration file.
             if(LoadConfig())
@@ -48,8 +49,9 @@ namespace SOA_A1_Purchase_Totalizer
                 Logging.LogLine("---");
 
                 //Publish service to registry.
-                Socket registry = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                registry.Connect(config_host_ip, (int)config_host_port);
+                registrySocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                registrySocket.Connect(config_host_ip, (int)config_host_port);
+
                 string message = SOA_A1.MessageBuilder.publishService(
                     config_teamName,
                     config_teamID,
@@ -65,11 +67,12 @@ namespace SOA_A1_Purchase_Totalizer
                 Logging.LogLine("Calling SOA-Registry with message :");
                 Logging.LogLine("\t" + message);
 
-                SOA_A1.TCPHelper.sendMessage(message, registry);
+                SOA_A1.TCPHelper.sendMessage(message, registrySocket);
                 byte[] buffer = new byte[1024];
-                string responseMessage = SOA_A1.TCPHelper.receiveMessage(buffer, registry);
+                string responseMessage = SOA_A1.TCPHelper.receiveMessage(buffer, registrySocket);
                 Logging.LogLine("\tResponse from SOA-Registry :");
                 Logging.LogLine("\t\t" + responseMessage);
+                registrySocket.Close();
 
                 if(responseMessage.Contains("SOA|NOT-OK|") && !responseMessage.Contains("has already published service"))
                 {
@@ -91,16 +94,16 @@ namespace SOA_A1_Purchase_Totalizer
 
                     while (true)
                     {
-                        Socket socket = listener.AcceptSocket(); //blocks
-                        Stream stream = new NetworkStream(socket);
+                        clientSocket = listener.AcceptSocket(); //blocks
+                        Stream clientStream = new NetworkStream(clientSocket);
 
                         Logging.LogLine("Receiving service request :");
-                        StreamReader sr = new StreamReader(stream);
-                        StreamWriter sw = new StreamWriter(stream);
+                        StreamReader sr = new StreamReader(clientStream);
+                        StreamWriter sw = new StreamWriter(clientStream);
                         sw.AutoFlush = true;
 
                         byte[] msgBuffer = new byte[1024];
-                        socket.Receive(msgBuffer);
+                        clientSocket.Receive(msgBuffer);
 
                         string clientMsg = Encoding.ASCII.GetString(msgBuffer);
                         if (clientMsg.Contains("DRC|EXEC-SERVICE|"))
@@ -119,16 +122,18 @@ namespace SOA_A1_Purchase_Totalizer
 
 
                                 //Communicate to registry to get team info.
+                                registrySocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                                registrySocket.Connect(config_host_ip, (int)config_host_port);
                                 string queryTeamMessage = SOA_A1.MessageBuilder.queryTeam(config_teamName, config_teamID, clientTeamName, clientTeamID, config_tagName);
                                 Logging.LogLine("Calling SOA-Registry with message :");
                                 Logging.LogLine("\t" + queryTeamMessage);
-                                SOA_A1.TCPHelper.sendMessage(queryTeamMessage, registry);
-
+                                SOA_A1.TCPHelper.sendMessage(queryTeamMessage, registrySocket);
                                 byte[] queryTeamBuffer = new byte[1024];
-                                string queryTeamresponseMessage = SOA_A1.TCPHelper.receiveMessage(queryTeamBuffer, registry);
+                                string queryTeamresponseMessage = SOA_A1.TCPHelper.receiveMessage(queryTeamBuffer, registrySocket);
                                 Logging.LogLine("\tResponse from SOA-Registry :");
                                 Logging.LogLine("\t\t" + queryTeamresponseMessage);
                                 Logging.LogLine("---");
+                                registrySocket.Close();
 
                                 if (queryTeamresponseMessage.Contains("SOA|OK|"))
                                 {
@@ -144,13 +149,13 @@ namespace SOA_A1_Purchase_Totalizer
                                             "RSP|5|TotalPurchaseAmount|float|" + results.Total_purchase_amount +"|");
                                         Logging.LogLine("Responding to service request :");
                                         Logging.LogLine("\t" + resultsMessage);
-                                        socket.Send(Encoding.ASCII.GetBytes(resultsMessage));
+                                        clientSocket.Send(Encoding.ASCII.GetBytes(resultsMessage));
                                         Logging.LogLine("---");
                                     }
                                     else
                                     {
                                         string resultsMessage = SOA_A1.MessageBuilder.executeServiceReplyError(-3, "Invalid parameters sent.");
-                                        socket.Send(Encoding.ASCII.GetBytes(resultsMessage));
+                                        clientSocket.Send(Encoding.ASCII.GetBytes(resultsMessage));
                                     }
                                     //error -3
                                 }
@@ -167,8 +172,8 @@ namespace SOA_A1_Purchase_Totalizer
                         }
                         //}
                         
-                        stream.Close();
-                        socket.Close();
+                        clientStream.Close();
+                        clientSocket.Close();
                     }
                 }
                 else
