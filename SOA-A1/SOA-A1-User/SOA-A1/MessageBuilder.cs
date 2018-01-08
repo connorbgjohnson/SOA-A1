@@ -68,7 +68,7 @@ namespace SOA_A1
             return message;
         }
 
-        public static string executeServiceReply(string teamName, string teamID, params string[] responses)
+        public static string executeServiceReply(params string[] responses)
         {
             string message = "";
             message = BOM + "PUB|OK|||" + responses.Length + "|" + EOS;

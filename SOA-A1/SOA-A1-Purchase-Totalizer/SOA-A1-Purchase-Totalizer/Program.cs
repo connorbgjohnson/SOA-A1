@@ -28,7 +28,7 @@ namespace SOA_A1_Purchase_Totalizer
         static int numArgs = 2;
         static int numResponses = 5;
         static List<string> listArgs = new List<string>(new string[] { "ARG|1|ProvinceOrTerritory|string|mandatory||", "ARG|2|PurchaseValue|float|mandatory||"});
-        static List<string> listResps = new List<string>(new string[] { "RSP|1|Subtotalamount|float||", "RSP|2|PSTamount|float||", "RSP|3|HSTamount|float||", "RSP|4|GSTamount|float||", "RSP|5|TotalpurchaseAmount|float||" });
+        static List<string> listResps = new List<string>(new string[] { "RSP|1|SubTotalAmount|float||", "RSP|2|PSTamount|float||", "RSP|3|HSTamount|float||", "RSP|4|GSTamount|float||", "RSP|5|TotalPurchaseAmount|float||" });
         static string myIP = "10.113.21.30";
         
 
@@ -99,16 +99,6 @@ namespace SOA_A1_Purchase_Totalizer
                         socket.Receive(msgBuffer);
 
                         string clientMsg = Encoding.ASCII.GetString(msgBuffer);
-                        //while (true)
-                        //{
-                        //    int dicks = 0;
-                        //    string clientMsg = "";
-                        //    while(!clientMsg.Contains(EOM))
-                        //    {
-                        //        clientMsg += sr.ReadLine();
-                        //        Console.WriteLine(dicks++);
-                        //    }
-
                         if (clientMsg.Contains("DRC|EXEC-SERVICE|"))
                         {
                             try
@@ -134,7 +124,7 @@ namespace SOA_A1_Purchase_Totalizer
                                 string queryTeamresponseMessage = SOA_A1.TCPHelper.receiveMessage(queryTeamBuffer, registry);
                                 Logging.LogLine("\tResponse from SOA-Registry :");
                                 Logging.LogLine("\t\t" + queryTeamresponseMessage);
-
+                                Logging.LogLine("---");
 
                                 if (responseMessage.Contains("SOA|OK|"))
                                 {
@@ -142,7 +132,20 @@ namespace SOA_A1_Purchase_Totalizer
                                     TaxBreakdown results = PurchaseTotalizer.Calculate(clientProvinceCode, clientPurchaseValue);
                                     if(results.Valid)
                                     {
-                                        string resultsMessage = 
+                                        string resultsMessage = SOA_A1.MessageBuilder.executeServiceReply(
+                                            "RSP|1|SubTotalAmount|float|" + results.Sub_total_amount + "|",
+                                            "RSP|2|PSTamount|float|" + results.PST_amount + "|",
+                                            "RSP|3|HSTamount|float|" + results.HST_amount +"|",
+                                            "RSP|4|GSTamount|float|" + results.GST_amount +"|",
+                                            "RSP|5|TotalPurchaseAmount|float|" + results.Total_purchase_amount +"|");
+                                        Logging.LogLine("Responding to service request :");
+                                        Logging.LogLine("\t" + resultsMessage);
+                                        socket.Send(System.Text.Encoding.ASCII.GetBytes(resultsMessage));
+                                        Logging.LogLine("---");
+                                    }
+                                    else
+                                    {
+                                        string resultsMessage = SOA_A1.MessageBuilder.executeServiceReplyError(-3, "Invalid parameters sent.");
                                     }
                                     //error -3
                                 }
@@ -334,16 +337,15 @@ namespace SOA_A1_Purchase_Totalizer
 
         static void CreateConfig()
         {
-            string configFileString = @"teamname=
-teamId=
+            string configFileString = @"teamId=
 teamName=
 tagName=GIORP-TOTAL
 serviceName=purchaseTotalizer
 securityLevel=1
 description=This service totals the cost and tax and displays it broken down.
 host_ip=
-host_port=
-client_port=";
+host_port=3128
+client_port=3000";
             File.WriteAllText(CONFIG_FILE_PATH, configFileString);
             Console.WriteLine("Created config file as none existed. Please fill it out.");
         }
