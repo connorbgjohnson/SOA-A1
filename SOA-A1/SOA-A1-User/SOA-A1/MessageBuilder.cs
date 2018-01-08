@@ -67,6 +67,23 @@ namespace SOA_A1
             message += EOS;
             return message;
         }
+
+        public static string executeServiceReply(string teamName, string teamID, params string[] responses)
+        {
+            string message = "";
+            message = BOM + "PUB|OK|||" + responses.Length + "|" + EOS;
+            foreach(string response in responses)
+            {
+                message += response + EOS;
+            }
+
+            return message += EOS + EOM + EOS;
+        }
+
+        public static string executeServiceReplyError(int errorCode, string errorMessage)
+        {
+            return BOM + "PUB|NOT-OK|" + errorCode + "|" + errorMessage + "||" + EOS + EOM + EOS;
+        }
         
     }
 }
