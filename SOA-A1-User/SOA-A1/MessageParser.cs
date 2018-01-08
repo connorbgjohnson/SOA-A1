@@ -140,7 +140,7 @@ namespace SOA_A1
             
             foreach (string line in lines)
             {
-                if (parseMessage(line)[0] == segmentTag)
+                if (parseMessage(line)[0].Contains(segmentTag))
                 {
                     segment = line;
                 }

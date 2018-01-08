@@ -34,6 +34,8 @@ namespace SOA_A1_Purchase_Totalizer
 
         static void Main(string[] args)
         {
+
+
             //Try and load configuration file.
             if(LoadConfig())
             {
@@ -81,6 +83,8 @@ namespace SOA_A1_Purchase_Totalizer
                         Console.WriteLine("Service already registered: " + responseMessage);
                     }
 
+                    Console.WriteLine("Waiting for client connections:");
+
                     //Start listening for cient connections.
                     TcpListener listener = new TcpListener((int)config_localPort);
                     listener.Start();
@@ -110,23 +114,23 @@ namespace SOA_A1_Purchase_Totalizer
                                 string clientTeamName = clientArgs[2];
                                 string clientTeamID = clientArgs[3];
                                 string[] msgArgs = SOA_A1.MessageParser.argsParser(SOA_A1.MessageParser.parseMessageByEOS(clientMsg));
-                                string clientProvinceCode = msgArgs[0];
-                                decimal clientPurchaseValue = decimal.Parse(msgArgs[0]);
+                                string clientProvinceCode = SOA_A1.MessageParser.parseMessage(msgArgs[0])[5];
+                                decimal clientPurchaseValue = decimal.Parse(SOA_A1.MessageParser.parseMessage(msgArgs[1])[5]);
 
 
                                 //Communicate to registry to get team info.
                                 string queryTeamMessage = SOA_A1.MessageBuilder.queryTeam(config_teamName, config_teamID, clientTeamName, clientTeamID, config_tagName);
                                 Logging.LogLine("Calling SOA-Registry with message :");
-                                Logging.LogLine("\t" + message);
+                                Logging.LogLine("\t" + queryTeamMessage);
+                                SOA_A1.TCPHelper.sendMessage(queryTeamMessage, registry);
 
-                                SOA_A1.TCPHelper.sendMessage(message, registry);
                                 byte[] queryTeamBuffer = new byte[1024];
                                 string queryTeamresponseMessage = SOA_A1.TCPHelper.receiveMessage(queryTeamBuffer, registry);
                                 Logging.LogLine("\tResponse from SOA-Registry :");
                                 Logging.LogLine("\t\t" + queryTeamresponseMessage);
                                 Logging.LogLine("---");
 
-                                if (responseMessage.Contains("SOA|OK|"))
+                                if (queryTeamresponseMessage.Contains("SOA|OK|"))
                                 {
                                     //Perform calculations and send response message.
                                     TaxBreakdown results = PurchaseTotalizer.Calculate(clientProvinceCode, clientPurchaseValue);
@@ -140,12 +144,13 @@ namespace SOA_A1_Purchase_Totalizer
                                             "RSP|5|TotalPurchaseAmount|float|" + results.Total_purchase_amount +"|");
                                         Logging.LogLine("Responding to service request :");
                                         Logging.LogLine("\t" + resultsMessage);
-                                        socket.Send(System.Text.Encoding.ASCII.GetBytes(resultsMessage));
+                                        socket.Send(Encoding.ASCII.GetBytes(resultsMessage));
                                         Logging.LogLine("---");
                                     }
                                     else
                                     {
                                         string resultsMessage = SOA_A1.MessageBuilder.executeServiceReplyError(-3, "Invalid parameters sent.");
+                                        socket.Send(Encoding.ASCII.GetBytes(resultsMessage));
                                     }
                                     //error -3
                                 }
@@ -338,7 +343,7 @@ namespace SOA_A1_Purchase_Totalizer
         static void CreateConfig()
         {
             string configFileString = @"teamId=
-teamName=
+teamName=WesNet
 tagName=GIORP-TOTAL
 serviceName=purchaseTotalizer
 securityLevel=1

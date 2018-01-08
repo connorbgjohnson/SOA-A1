@@ -27,24 +27,24 @@ namespace SOA_A1
         public static string queryTeam(string teamName, string teamID, string serviceTeamName, string serviceTeamID, string tagName)
         {
             string message = "";
-            message = BOM + "DRC|QUERY-TEAM|" + teamName + "|" + teamID + "|" + EOS + "INF|" + serviceTeamName + "|" + serviceTeamID + tagName + EOS + EOM + EOS;
+            message = BOM + "DRC|QUERY-TEAM|" + teamName + "|" + teamID + "|" + EOS + "INF|" + serviceTeamName + "|" + serviceTeamID + "|" + tagName + EOS + EOM + EOS;
             return message;
         }
 
         public static string publishService(string teamName, string teamID, string tagName, string serviceName, int securityLevel, int numArgs, int numResponses, string description, List<string> args, List<string> resps, string publishedServerIP, int publishedPort)
         {
             string message = "";
-            message = BOM + "DRC|PUB-SERVICE|" + securityLevel + "|" + numArgs.ToString() + "|" + numResponses.ToString() + "|" + description + "|" + EOS;
+            message = BOM + "DRC|PUB-SERVICE|" + teamName + "|" + teamID + "|" + securityLevel + "|" + numArgs.ToString() + "|" + numResponses.ToString() + "|" + description + "|" + EOS;
+            message += "SRV|" + tagName + "|" + serviceName + "|" + securityLevel + "|" + numArgs + "|" + numResponses + "|" + description + "|" + EOS;
             foreach (string arg in args)
             {
-                message = message + arg;
+                message = message + arg + EOS;
             }
-            message = message + EOS;
             foreach (string resp in resps)
             {
-                message = message + resp;
+                message = message + resp + EOS;
             }
-            message = message + EOS + "MCH|" + publishedServerIP + "|" + publishedPort.ToString() + "|" + EOS + EOM + EOS;
+            message = message + "MCH|" + publishedServerIP + "|" + publishedPort.ToString() + "|" + EOS + EOM + EOS;
             return message;
         }
         public static string queryService(string teamName, string teamID, string tagName)
@@ -84,6 +84,6 @@ namespace SOA_A1
         {
             return BOM + "PUB|NOT-OK|" + errorCode + "|" + errorMessage + "||" + EOS + EOM + EOS;
         }
-        
+		
     }
 }
