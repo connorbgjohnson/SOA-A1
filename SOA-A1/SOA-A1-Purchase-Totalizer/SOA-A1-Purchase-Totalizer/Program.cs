@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Net.Sockets;
 
 namespace SOA_A1_Purchase_Totalizer
 {
@@ -12,39 +13,73 @@ namespace SOA_A1_Purchase_Totalizer
         const string CONFIG_FILE_PATH = "purchase_totalizer.config";
 
         //From config.
-        static string tagName = "GIORP-TOTAL";
-        static string teamName = "Wesnet";
+        static string config_teamID = "1219";
+        static string config_tagName = "GIORP-TOTAL";
+        static string config_teamName = "WesNet";
+        static string config_host_ip = "10.113.21.66";
+        static int config_host_port = 3128;
+        static string config_serviceName = "purchaseTotalizer";
+        static int config_securityLevel = 1;
+        static string config_description = "description";
 
-//teamId=
-//tagName=
-//serviceName=
-//securityLevel=
-//numArgs=
-//numResponses=
-//description=
-//registryIP=
-//registryPort=
-
-        //List all the variables needed by the application here. Moving things to config files can be done later.
-        //string fasdfasdf
+        //Service parameters:
+        static int numArgs = 2;
+        static int numResponses = 5;
+        static List<string> listArgs = new List<string>(new string[] { "ARG|1|ProvinceOrTerritory|string|mandatory||", "ARG|2|PurchaseValue|float|mandatory||"});
+        static List<string> listResps = new List<string>(new string[] { "RSP|1|Subtotalamount|float||", "RSP|2|PSTamount|float||", "RSP|3|HSTamount|float||", "RSP|4|GSTamount|float||", "RSP|5|TotalpurchaseAmount|float||" });
+        static string myIP = "10.113.21.30";
+        static int config_localPort = 3000;
 
         static void Main(string[] args)
         {
             //Try and load configuration file.
-            if(!LoadConfig())
+            if(LoadConfig())
             {
                 //Log startup message.
                 Logging.LogLine("=================================================================");
-                Logging.LogLine(string.Format("Team\t: {0}", teamName));
-                Logging.LogLine(string.Format("Tag-name: {0}", tagName));
+                Logging.LogLine(string.Format("Team\t: {0}", config_teamName));
+                Logging.LogLine(string.Format("Tag-name: {0}", config_tagName));
                 Logging.LogLine("Service: " + "purchaseTotalizer");
                 Logging.LogLine("=================================================================");
                 Logging.LogLine("---");
 
                 //Publish service to registry.
+                Socket registry = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                registry.Connect(config_host_ip, config_host_port);
+                string message = SOA_A1.MessageBuilder.publishService(
+                    config_teamName,
+                    config_teamID,
+                    config_tagName,
+                    config_serviceName,
+                    config_securityLevel,
+                    numArgs,
+                    numResponses,
+                    config_description,
+                    listArgs,
+                    listResps,
+                    myIP, config_localPort);
+                Logging.LogLine("Calling SOA-Registry with message :");
+                Logging.LogLine("\t" + message);
 
+                SOA_A1.TCPHelper.sendMessage(message, registry);
+                byte[] buffer = new byte[1024];
+                string responseMessage = SOA_A1.TCPHelper.receiveMessage(buffer, registry);
+                Logging.LogLine("\tResponse from SOA-Registry :");
+                Logging.LogLine("\t\t" + responseMessage);
+
+                if(responseMessage.Contains("SOA|NOT-OK|"))
+                {
+                    Console.WriteLine("An error occured.");
+                    Logging.LogLine("!!!An error occured.!!!");
+                }
+                else
+                {
+                    Console.WriteLine("");
+                }
+                Console.WriteLine(responseMessage);
 
                 //Start waiting for messages.
+
 
                 //Probably do something about ending the app.
 
