@@ -1,14 +1,40 @@
-﻿using System;
+﻿/****************************** Module Header ******************************\
+Module Name:  FormBuilder.cs
+Project:      SOA-A1-User
+Programmer: Connor Johnson
+Date: 1/8/2018
+Description: Contains the class FormBuilder
+
+\***************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+
 namespace SOA_A1
 {
     class FormBuilder
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="resps"></param>
+        /// <param name="serviceName"></param>
+        /// <param name="serviceTeamName"></param>
+        /// <param name="serviceDescription"></param>
+        /// <param name="serviceIP"></param>
+        /// <param name="servicePort"></param>
+        /// <param name="teamName"></param>
+        /// <param name="teamID"></param>
+        /// <param name="expiration"></param>
+        /// <param name="regIP"></param>
+        /// <param name="regPort"></param>
+        /// <param name="frm"></param>
         public static void buildSelectedService(string[] args, string[] resps, string serviceName, string serviceTeamName, string serviceDescription, string serviceIP, string servicePort, string teamName, string teamID, string expiration, string regIP, string regPort, frmSelectedService frm)
         {
             //Fill text boxes with data from previous forms
@@ -54,6 +80,15 @@ namespace SOA_A1
             frm.Show();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="teamName"></param>
+        /// <param name="teamID"></param>
+        /// <param name="expiration"></param>
+        /// <param name="regIP"></param>
+        /// <param name="regPort"></param>
+        /// <param name="frm"></param>
         public static void buildServiceSelection(string teamName, string teamID, string expiration, string regIP, string regPort, frmServiceSelection frm)
         {
             frm.txtTeamName.Text = teamName;

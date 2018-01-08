@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.cboServiceSelect = new System.Windows.Forms.ComboBox();
-            this.cmdExecute = new System.Windows.Forms.Button();
+            this.cmdSelect = new System.Windows.Forms.Button();
             this.cmdDisconnectTeam = new System.Windows.Forms.Button();
             this.lblTeamName = new System.Windows.Forms.Label();
             this.lblTeamID = new System.Windows.Forms.Label();
@@ -56,15 +56,15 @@
             this.cboServiceSelect.Size = new System.Drawing.Size(121, 21);
             this.cboServiceSelect.TabIndex = 0;
             // 
-            // cmdExecute
+            // cmdSelect
             // 
-            this.cmdExecute.Location = new System.Drawing.Point(151, 12);
-            this.cmdExecute.Name = "cmdExecute";
-            this.cmdExecute.Size = new System.Drawing.Size(75, 23);
-            this.cmdExecute.TabIndex = 1;
-            this.cmdExecute.Text = "Select";
-            this.cmdExecute.UseVisualStyleBackColor = true;
-            this.cmdExecute.Click += new System.EventHandler(this.cmdExecute_Click);
+            this.cmdSelect.Location = new System.Drawing.Point(151, 12);
+            this.cmdSelect.Name = "cmdSelect";
+            this.cmdSelect.Size = new System.Drawing.Size(75, 23);
+            this.cmdSelect.TabIndex = 1;
+            this.cmdSelect.Text = "Select";
+            this.cmdSelect.UseVisualStyleBackColor = true;
+            this.cmdSelect.Click += new System.EventHandler(this.cmdSelect_Click);
             // 
             // cmdDisconnectTeam
             // 
@@ -177,7 +177,7 @@
             this.Controls.Add(this.lblTeamID);
             this.Controls.Add(this.lblTeamName);
             this.Controls.Add(this.cmdDisconnectTeam);
-            this.Controls.Add(this.cmdExecute);
+            this.Controls.Add(this.cmdSelect);
             this.Controls.Add(this.cboServiceSelect);
             this.Name = "frmServiceSelection";
             this.Text = "Service Finder - Service Selection";
@@ -189,7 +189,7 @@
         #endregion
 
         private System.Windows.Forms.ComboBox cboServiceSelect;
-        private System.Windows.Forms.Button cmdExecute;
+        private System.Windows.Forms.Button cmdSelect;
         private System.Windows.Forms.Button cmdDisconnectTeam;
         private System.Windows.Forms.Label lblTeamName;
         private System.Windows.Forms.Label lblTeamID;
