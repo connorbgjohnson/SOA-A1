@@ -24,3 +24,20 @@ float calculateSeasonal(float piecePay, float hours, int pieces);
 
 ///Calculate contract employee weekly pay.
 float calculateContract(float contractAmount, int weeks);
+
+
+/* CONSTANTS */
+#define EMPLOYEE_VALUE_HOURLY "HOUR"
+#define EMPLOYEE_VALUE_FULLTIME "FULL"
+#define EMPLOYEE_VALUE_SEASONAL "SEASON"
+#define EMPLOYEE_VALUE_CONTRACT "CONTRACT"
+
+#define EMPLOYEE_CODE_HOURLY 0
+#define EMPLOYEE_CODE_FULLTIME 1
+#define EMPLOYEE_CODE_SEASONAL 2
+#define EMPLOYEE_CODE_CONTRACT 3
+
+#define ERROR_INVALID_EMPLOYEE_TYPE 1
+
+#define HOURS_IN_WEEK 40.0f
+
