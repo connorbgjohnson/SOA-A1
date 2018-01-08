@@ -47,7 +47,7 @@
             // lblArgName
             // 
             this.lblArgName.AutoSize = true;
-            this.lblArgName.Location = new System.Drawing.Point(73, 4);
+            this.lblArgName.Location = new System.Drawing.Point(73, 6);
             this.lblArgName.Name = "lblArgName";
             this.lblArgName.Size = new System.Drawing.Size(54, 13);
             this.lblArgName.TabIndex = 1;
@@ -56,7 +56,7 @@
             // lblArgDataType
             // 
             this.lblArgDataType.AutoSize = true;
-            this.lblArgDataType.Location = new System.Drawing.Point(133, 4);
+            this.lblArgDataType.Location = new System.Drawing.Point(216, 6);
             this.lblArgDataType.Name = "lblArgDataType";
             this.lblArgDataType.Size = new System.Drawing.Size(57, 13);
             this.lblArgDataType.TabIndex = 2;
@@ -65,7 +65,7 @@
             // lblArgMandatory
             // 
             this.lblArgMandatory.AutoSize = true;
-            this.lblArgMandatory.Location = new System.Drawing.Point(193, 4);
+            this.lblArgMandatory.Location = new System.Drawing.Point(279, 6);
             this.lblArgMandatory.Name = "lblArgMandatory";
             this.lblArgMandatory.Size = new System.Drawing.Size(98, 13);
             this.lblArgMandatory.TabIndex = 3;
@@ -73,7 +73,7 @@
             // 
             // txtArgValue
             // 
-            this.txtArgValue.Location = new System.Drawing.Point(297, 4);
+            this.txtArgValue.Location = new System.Drawing.Point(383, 3);
             this.txtArgValue.Name = "txtArgValue";
             this.txtArgValue.Size = new System.Drawing.Size(119, 20);
             this.txtArgValue.TabIndex = 4;
@@ -88,7 +88,7 @@
             this.Controls.Add(this.lblArgName);
             this.Controls.Add(this.lblArgPosition);
             this.Name = "Argument";
-            this.Size = new System.Drawing.Size(438, 28);
+            this.Size = new System.Drawing.Size(505, 28);
             this.ResumeLayout(false);
             this.PerformLayout();
 

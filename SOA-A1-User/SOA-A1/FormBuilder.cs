@@ -11,6 +11,7 @@ namespace SOA_A1
     {
         public static void buildSelectedService(string[] args, string[] resps, string serviceName, string serviceTeamName, string serviceDescription, string serviceIP, string servicePort, string teamName, string teamID, string expiration, string regIP, string regPort, frmSelectedService frm)
         {
+            //Fill text boxes with data from previous forms
             frm.txtServiceName.Text = serviceName;
             frm.txtServiceTeamName.Text = serviceTeamName;
             frm.txtDescription.Text = serviceDescription;
@@ -22,15 +23,15 @@ namespace SOA_A1
             frm.txtRegistryIP.Text = regIP;
             frm.txtRegistryPort.Text = regPort;
 
-            List<Argument> arguments = new List<Argument>();
-            List<Response> responses = new List<Response>();
+            List<Argument> arguments = new List<Argument>();//List of all arguments service needs
+            List<Response> responses = new List<Response>();//list of all responses service will be sending
 
-            string[] parsedArg = null;
-            string[] parsedResp = null;
+            string[] parsedArg = null;//parsing an argument to its deliminited sections
+            string[] parsedResp = null;// parsing a response to its delimited sections
 
-            foreach (string arg in args)
+            foreach (string arg in args)//cycle through all args
             {
-                parsedArg = MessageParser.parseMessage(arg);
+                parsedArg = MessageParser.parseMessage(arg);//parse the arg into its parts
                 arguments.Add(new Argument());
                 arguments.Last().lblArgPosition.Text = parsedArg[1];
                 arguments.Last().lblArgName.Text = parsedArg[2];

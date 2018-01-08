@@ -64,11 +64,23 @@ namespace SOA_A1
             string teamID = txtTeamID.Text;
             string serviceName = txtServiceName.Text;
             string argValue = "";
+            string errorString = "";
+            //error checks
             bool error = false;
             bool parse = false;
+            List<string> args = new List<string>();//All arguments converted from controls to strings
+            string arg = "";//an indivudual argument string for storage in args
+            Socket service = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);//Socket to be used to connect to service
+            int port = 0;//Service Port Number
+            int.TryParse(txtServicePort.Text, out port);//Parse Port from form text to int value
+            IPAddress ip = IPAddress.Parse(txtServiceIP.Text);
+            byte[] buffer = new byte[1024];//buffer for storing messages received from service
+            //Cycle through all arguments
             foreach (Argument argument in flpArgs.Controls)
             {
-                argValue = argument.txtArgValue.Text;
+                argValue = argument.txtArgValue.Text;//get user input for argument
+
+                //Check the datatype of the argument and then compare the value to the datatype specified
                 if (argument.lblArgDataType.Text == "CHAR")
                 {
                     if (char.TryParse(argValue, out char result))
@@ -115,19 +127,48 @@ namespace SOA_A1
                 {
                     parse = true;
                 }
-                else
+                //Check if argument is a mandatory field and if it is filled out respectively
+                //If argument is mandatory and is not filled in, show error
+                if (argument.lblArgMandatory.Text == "mandatory" && argument.txtArgValue.Text == "")
                 {
-                    parse = false;
+                    error = true;
+                    errorString += "ERROR: Mandatory fields not filled in\n";
                 }
+                //If the argument is not the required datatype, show error
                 if (parse == false)
                 {
                     error = true;
+                    errorString += "ERROR: Value does not correspond to data type\n";
+                }
+                //If now error is specified (argument is filled in correctly), add argument to the list of arguments
+                if (error == false)
+                {
+                    arg = "ARG|" + argument.lblArgPosition.Text + "|" + argument.lblArgName.Text + "|" + argument.lblArgDataType.Text + "||" + argument.txtArgValue.Text + "|";
+                    args.Add(arg);
+                }
+                //If there is an error, show message instead of adding to the argList
+                else
+                {
+                    MessageBox.Show(errorString);
+                    errorString = "";
+                    args.Clear();//Empty the arg List and start over
                 }
                 parse = false;
             }
-            if (error == false)
+            try
             {
-
+                //If there were no errors after all args are compiled, send the message
+                if (error == false)
+                {
+                    message = MessageBuilder.executeService(teamName, teamID, serviceName, args.Count, args);//Build the executeService 
+                    service.Connect(ip, port);//Connect to the service's socket
+                    TCPHelper.sendMessage(message, service);//Send the execute message to the service
+                    TCPHelper.receiveMessage(buffer, service);//Wait for a response from the service
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
     }

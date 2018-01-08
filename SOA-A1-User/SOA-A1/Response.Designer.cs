@@ -65,6 +65,7 @@
             // 
             this.txtRespValue.Location = new System.Drawing.Point(316, 3);
             this.txtRespValue.Name = "txtRespValue";
+            this.txtRespValue.ReadOnly = true;
             this.txtRespValue.Size = new System.Drawing.Size(100, 20);
             this.txtRespValue.TabIndex = 3;
             // 
