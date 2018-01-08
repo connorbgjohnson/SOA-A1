@@ -11,6 +11,7 @@ namespace SOA_A1_Purchase_Totalizer
     class Program
     {
         const string CONFIG_FILE_PATH = "purchase_totalizer.config";
+        const char EOM = (char)28;
 
         //From config.
         static string config_teamID = null;
@@ -67,20 +68,25 @@ namespace SOA_A1_Purchase_Totalizer
                 Logging.LogLine("\tResponse from SOA-Registry :");
                 Logging.LogLine("\t\t" + responseMessage);
 
-                if(responseMessage.Contains("SOA|NOT-OK|"))
+                if(responseMessage.Contains("SOA|NOT-OK|") && !responseMessage.Contains("has already published service"))
                 {
                     Console.WriteLine("An error occured.");
                     Logging.LogLine("!!!An error occured.!!!");
                 }
-                else if(responseMessage.Contains("SOA|OK|"))
+                else if(responseMessage.Contains("SOA|OK|") || responseMessage.Contains("has already published service"))
                 {
-                    //
+                    if(responseMessage.Contains("has already published service"))
+                    {
+                        Console.WriteLine("Service already registered: " + responseMessage);
+                    }
+
+                    //Start listening for cient connections.
                     TcpListener listener = new TcpListener(config_localPort);
                     listener.Start();
 
                     while (true)
                     {
-                        Socket socket = listener.AcceptSocket(); // blocks
+                        Socket socket = listener.AcceptSocket(); //blocks
                         Stream stream = new NetworkStream(socket);
 
                         Logging.LogLine("Receiving service request :");
@@ -88,32 +94,65 @@ namespace SOA_A1_Purchase_Totalizer
                         StreamWriter sw = new StreamWriter(stream);
                         sw.AutoFlush = true;
 
-                        while (true)
+                        byte[] msgBuffer = new byte[1024];
+                        socket.Receive(msgBuffer);
+
+                        string clientMsg = Encoding.ASCII.GetString(msgBuffer);
+                        //while (true)
+                        //{
+                        //    int dicks = 0;
+                        //    string clientMsg = "";
+                        //    while(!clientMsg.Contains(EOM))
+                        //    {
+                        //        clientMsg += sr.ReadLine();
+                        //        Console.WriteLine(dicks++);
+                        //    }
+
+                        if (clientMsg.Contains("DRC|EXEC-SERVICE|"))
                         {
-                            string clientMsg = sr.ReadLine();
-                            if (clientMsg == "" || clientMsg == null) break;
-                            if(clientMsg.Contains("DRC|EXEC_SERVICE|"))
+                            try
                             {
-                                Logging.LogLine(clientMsg);
+                                Logging.LogLine("\t" + clientMsg);
 
-                                //Check validity of message.
-                                string clientProvinceCode = ;
-                                decimal clientPurchaseValue = ;
-                                if()
+                                //Parse args and client info.
+                                string[] clientArgs = SOA_A1.MessageParser.parseMessage(SOA_A1.MessageParser.parseSegment("DRC", SOA_A1.MessageParser.parseMessageByEOS(clientMsg)));
+                                string clientTeamName = clientArgs[2];
+                                string clientTeamID = clientArgs[3];
+                                string[] msgArgs = SOA_A1.MessageParser.argsParser(SOA_A1.MessageParser.parseMessageByEOS(clientMsg));
+                                string clientProvinceCode = msgArgs[0];
+                                decimal clientPurchaseValue = decimal.Parse(msgArgs[0]);
+
+
+                                //Communicate to registry to get team info and then check security level.
+                                string queryTeamMessage = SOA_A1.MessageBuilder.queryTeam(config_teamName, config_teamID, clientTeamName, clientTeamID, config_tagName);
+                                Logging.LogLine("Calling SOA-Registry with message :");
+                                Logging.LogLine("\t" + message);
+
+                                SOA_A1.TCPHelper.sendMessage(message, registry);
+                                byte[] queryTeamBuffer = new byte[1024];
+                                string queryTeamresponseMessage = SOA_A1.TCPHelper.receiveMessage(queryTeamBuffer, registry);
+                                Logging.LogLine("\tResponse from SOA-Registry :");
+                                Logging.LogLine("\t\t" + queryTeamresponseMessage);
+
+                                //Parse out security level.
+
+
+                                int clientSecurityLevel = ;
+                                if (clientSecurityLevel >= (int)config_securityLevel)
                                 {
-                                    //Communicate to registry to get team info and then check security level.
-                                    int clientSecurityLevel = ;
-                                    if(clientSecurityLevel >= (int)config_securityLevel)
-                                    {
-                                        TaxBreakdown test = PurchaseTotalizer.Calculate(clientProvinceCode, clientPurchaseValue);
-                                    }
-                                    else
-                                    {
+                                    TaxBreakdown test = PurchaseTotalizer.Calculate(clientProvinceCode, clientPurchaseValue);
+                                }
+                                else
+                                {
 
-                                    }
                                 }
                             }
+                            catch(Exception ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                            }
                         }
+                        //}
                         
                         stream.Close();
                         socket.Close();
@@ -173,7 +212,7 @@ namespace SOA_A1_Purchase_Totalizer
 
                     if(ParseConfig(content))
                     {
-
+                        status = true;
                     }
                     else
                     {
@@ -188,7 +227,6 @@ namespace SOA_A1_Purchase_Totalizer
                     //config_serviceName
                     //config_securityLevel
                     //config_description
-
                 }
             }
             else
@@ -215,19 +253,19 @@ namespace SOA_A1_Purchase_Totalizer
                 {
                     if(twoRats[0] == "teamId")
                     {
-                        config_teamID = twoRats[1];
+                        config_teamID = twoRats[1].Replace("\r", "");
                     }
                     else if(twoRats[0] == "tagName")
                     {
-                        config_tagName = twoRats[1];
+                        config_tagName = twoRats[1].Replace("\r", "");
                     }
                     else if (twoRats[0] == "teamName")
                     {
-                        config_teamName = twoRats[1];
+                        config_teamName = twoRats[1].Replace("\r", "");
                     }
                     else if (twoRats[0] == "host_ip")
                     {
-                        config_host_ip = twoRats[1];
+                        config_host_ip = twoRats[1].Replace("\r", "");
                     }
                     else if (twoRats[0] == "host_port")
                     {
@@ -235,7 +273,7 @@ namespace SOA_A1_Purchase_Totalizer
                     }
                     else if (twoRats[0] == "serviceName")
                     {
-                        config_serviceName = twoRats[1];
+                        config_serviceName = twoRats[1].Replace("\r", "");
                     }
                     else if (twoRats[0] == "securityLevel")
                     {
@@ -243,13 +281,17 @@ namespace SOA_A1_Purchase_Totalizer
                     }
                     else if (twoRats[0] == "description")
                     {
-                        config_description = twoRats[1];
+                        config_description = twoRats[1].Replace("\r", "");
                     }
                 }
-                else
+                else if(twoRats.Length > 2)
                 {
                     Logging.LogLine("Error in log file cannot have more than one '=' sign: " + line);
                     break;
+                }
+                else
+                {
+                    //Do nothing. It's an empty line we don't care about.
                 }
             }
 

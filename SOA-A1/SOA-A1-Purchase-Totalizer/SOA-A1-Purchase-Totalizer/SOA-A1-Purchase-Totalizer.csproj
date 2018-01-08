@@ -45,6 +45,9 @@
     <Compile Include="..\..\SOA-A1-User\SOA-A1\MessageBuilder.cs">
       <Link>MessageBuilder.cs</Link>
     </Compile>
+    <Compile Include="..\..\SOA-A1-User\SOA-A1\MessageParser.cs">
+      <Link>MessageParser.cs</Link>
+    </Compile>
     <Compile Include="..\..\SOA-A1-User\SOA-A1\TCPHelper.cs">
       <Link>TCPHelper.cs</Link>
     </Compile>

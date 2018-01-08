@@ -28,7 +28,7 @@ namespace SOA_A1_Purchase_Totalizer
 		public static void LogLine(string message)
 		{
 			//Apppend datetime to the front of the message.
-			message = DateTime.Now.ToString("yyyy-mm-dd hh:mm:ss") + " " + message;
+			message = DateTime.Now.ToString("yyyy-mm-dd hh:mm:ss") + " " + message.Replace("\0", string.Empty);
 			try
 			{
 				using (StreamWriter file = File.AppendText(PATH))
