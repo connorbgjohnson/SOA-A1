@@ -24,14 +24,14 @@ namespace SOA_A1
             message = BOM + "DRC|UNREG-TEAM|" + teamName + "|" + teamID + "|" + EOS + EOM + EOS;
             return message;
         }
-        public static string queryTeam(string teamName, string teamID, string tagName)
+        public static string queryTeam(string teamName, string teamID, string serviceTeamName, string serviceTeamID, string tagName)
         {
             string message = "";
-            message = BOM + "DRC|QUERY-TEAM|" + teamName + "|" + teamID + "|" + EOS + "INF|" + teamName + "|" + teamID + tagName + EOS + EOM + EOS;
+            message = BOM + "DRC|QUERY-TEAM|" + teamName + "|" + teamID + "|" + EOS + "INF|" + serviceTeamName + "|" + serviceTeamID + tagName + EOS + EOM + EOS;
             return message;
         }
 
-        public static string publishService(string teamName, string teamID, string tagName, string serviceName, int securityLevel, int numArgs, int numResponses, string description, List<string> args, List<string> resps,string publishedServerIP, int publishedPort)
+        public static string publishService(string teamName, string teamID, string tagName, string serviceName, int securityLevel, int numArgs, int numResponses, string description, List<string> args, List<string> resps, string publishedServerIP, int publishedPort)
         {
             string message = "";
             message = BOM + "DRC|PUB-SERVICE|" + securityLevel + "|" + numArgs.ToString() + "|" + numResponses.ToString() + "|" + description + "|" + EOS;
@@ -60,9 +60,11 @@ namespace SOA_A1
             message = BOM + "DRC|EXEC-SERVICE|" + teamName + "|" + teamID + "|" + EOS + "SRV||" + serviceName + "||" + numArgs + "|||" + EOS;
             foreach (string arg in args)
             {
-                message = message + arg;
+                message += arg + EOS;
             }
-            message = message + EOS + EOM + EOS;
+            message += EOS;
+            message += EOM;
+            message += EOS;
             return message;
         }
         
