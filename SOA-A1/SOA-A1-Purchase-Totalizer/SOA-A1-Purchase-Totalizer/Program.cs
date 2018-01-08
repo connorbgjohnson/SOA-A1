@@ -13,14 +13,14 @@ namespace SOA_A1_Purchase_Totalizer
         const string CONFIG_FILE_PATH = "purchase_totalizer.config";
 
         //From config.
-        static string config_teamID = "1219";
-        static string config_tagName = "GIORP-TOTAL";
-        static string config_teamName = "WesNet";
-        static string config_host_ip = "10.113.21.66";
-        static int config_host_port = 3128;
-        static string config_serviceName = "purchaseTotalizer";
-        static int config_securityLevel = 1;
-        static string config_description = "description";
+        static string config_teamID = null;
+        static string config_tagName = null;
+        static string config_teamName = null;
+        static string config_host_ip = null;
+        static int? config_host_port = null;
+        static string config_serviceName = null;
+        static int? config_securityLevel = null;
+        static string config_description = null;
 
         //Service parameters:
         static int numArgs = 2;
@@ -45,13 +45,13 @@ namespace SOA_A1_Purchase_Totalizer
 
                 //Publish service to registry.
                 Socket registry = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                registry.Connect(config_host_ip, config_host_port);
+                registry.Connect(config_host_ip, (int)config_host_port);
                 string message = SOA_A1.MessageBuilder.publishService(
                     config_teamName,
                     config_teamID,
                     config_tagName,
                     config_serviceName,
-                    config_securityLevel,
+                    (int)config_securityLevel,
                     numArgs,
                     numResponses,
                     config_description,
@@ -72,11 +72,58 @@ namespace SOA_A1_Purchase_Totalizer
                     Console.WriteLine("An error occured.");
                     Logging.LogLine("!!!An error occured.!!!");
                 }
+                else if(responseMessage.Contains("SOA|OK|"))
+                {
+                    //
+                    TcpListener listener = new TcpListener(config_localPort);
+                    listener.Start();
+
+                    while (true)
+                    {
+                        Socket socket = listener.AcceptSocket(); // blocks
+                        Stream stream = new NetworkStream(socket);
+
+                        Logging.LogLine("Receiving service request :");
+                        StreamReader sr = new StreamReader(stream);
+                        StreamWriter sw = new StreamWriter(stream);
+                        sw.AutoFlush = true;
+
+                        while (true)
+                        {
+                            string clientMsg = sr.ReadLine();
+                            if (clientMsg == "" || clientMsg == null) break;
+                            if(clientMsg.Contains("DRC|EXEC_SERVICE|"))
+                            {
+                                Logging.LogLine(clientMsg);
+
+                                //Check validity of message.
+                                string clientProvinceCode = ;
+                                decimal clientPurchaseValue = ;
+                                if()
+                                {
+                                    //Communicate to registry to get team info and then check security level.
+                                    int clientSecurityLevel = ;
+                                    if(clientSecurityLevel >= (int)config_securityLevel)
+                                    {
+                                        TaxBreakdown test = PurchaseTotalizer.Calculate(clientProvinceCode, clientPurchaseValue);
+                                    }
+                                    else
+                                    {
+
+                                    }
+                                }
+                            }
+                        }
+                        
+                        stream.Close();
+                        socket.Close();
+                    }
+                }
                 else
                 {
-                    Console.WriteLine("");
+                    Console.WriteLine("Unhandled Error Occured.");
                 }
-                Console.WriteLine(responseMessage);
+                
 
                 //Start waiting for messages.
 
@@ -105,13 +152,14 @@ namespace SOA_A1_Purchase_Totalizer
         }
 
 
+
+
         static bool LoadConfig()
         {
             bool status = false;
 
             if (File.Exists(CONFIG_FILE_PATH))
             {
-                status = true;  //REMOVE MEMEMADFAIFHUIGHFAGFUGAUIGFGAS
                 using (FileStream fileStream = File.OpenRead(CONFIG_FILE_PATH))
                 {
                     byte[] b = new byte[1024];
@@ -123,6 +171,23 @@ namespace SOA_A1_Purchase_Totalizer
                         content += temp.GetString(b);
                     }
 
+                    if(ParseConfig(content))
+                    {
+
+                    }
+                    else
+                    {
+                        Console.WriteLine("Unable to parse config file.");
+                    }
+
+                    //config_teamID
+                    //config_tagName
+                    //config_teamName
+                    //config_host_ip
+                    //config_host_port
+                    //config_serviceName
+                    //config_securityLevel
+                    //config_description
 
                 }
             }
@@ -134,14 +199,85 @@ namespace SOA_A1_Purchase_Totalizer
             return status;
         }
 
-
-        static void ParseConfig(string configString)
+        /// <summary>
+        /// Parse the configuration file.
+        /// </summary>
+        /// <param name="configString">Config file string.</param>
+        /// <returns>If the file was parsed succesfully.</returns>
+        static bool ParseConfig(string configString)
         {
+            bool success = false;
             string[] fileByLine = configString.Split('\n');
             foreach (string line in fileByLine)
             {
-                //regex
+                string[] twoRats = line.Split('=');
+                if (twoRats.Length == 2)
+                {
+                    if(twoRats[0] == "teamId")
+                    {
+                        config_teamID = twoRats[1];
+                    }
+                    else if(twoRats[0] == "tagName")
+                    {
+                        config_tagName = twoRats[1];
+                    }
+                    else if (twoRats[0] == "teamName")
+                    {
+                        config_teamName = twoRats[1];
+                    }
+                    else if (twoRats[0] == "host_ip")
+                    {
+                        config_host_ip = twoRats[1];
+                    }
+                    else if (twoRats[0] == "host_port")
+                    {
+                        config_host_port = int.Parse(twoRats[1]);
+                    }
+                    else if (twoRats[0] == "serviceName")
+                    {
+                        config_serviceName = twoRats[1];
+                    }
+                    else if (twoRats[0] == "securityLevel")
+                    {
+                        config_securityLevel = int.Parse(twoRats[1]);
+                    }
+                    else if (twoRats[0] == "description")
+                    {
+                        config_description = twoRats[1];
+                    }
+                }
+                else
+                {
+                    Logging.LogLine("Error in log file cannot have more than one '=' sign: " + line);
+                    break;
+                }
             }
+
+            if(CheckAllConfigValuesAreFilledIn())
+            {
+                success = true;
+            }
+
+            return success;
+        }
+
+        //Check that all the configuration stuff got added.
+        static bool CheckAllConfigValuesAreFilledIn()
+        {
+            bool miaow = false;
+            if (config_teamID != null ||
+                config_tagName != null ||
+                config_teamName != null ||
+                config_host_ip != null ||
+                config_host_port != null ||
+                config_serviceName != null ||
+                config_securityLevel != null ||
+                config_description != null)
+            {
+                miaow = true;
+            }
+
+            return miaow;
         }
 
         static void CreateConfig()
