@@ -1,4 +1,13 @@
-﻿using System;
+﻿/****************************** Module Header ******************************\
+Module Name:  frmSelectedService.cs
+Project:      SOA-A1-User
+Programmer: Connor Johnson
+Date: 1/8/2018
+Description: Contains the logic for the Form frmSelectedService.
+
+\***************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -9,6 +18,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net;
 using System.Net.Sockets;
+
 namespace SOA_A1
 {
     public partial class frmSelectedService : Form
@@ -18,29 +28,33 @@ namespace SOA_A1
             InitializeComponent();
         }
 
-        private void cmdDisconnect_Click(object sender, EventArgs e)
+        private void cmdDisconnect_Click(object sender, EventArgs e)//If user wants to disconnect their team
         {
             byte[] buffer = new byte[1024];
             string teamName = txtTeamName.Text;
             string teamID = txtTeamID.Text;
-            string message = MessageBuilder.unRegisterTeam(teamName, teamID);
+            string message = MessageBuilder.unRegisterTeam(teamName, teamID);//Disconnecting unregisters team
             string ipString = txtRegistryIP.Text;
             string portString = txtRegistryPort.Text;
             string[] response = null;
             bool isOK = false;
-            frmConnectTeam frm = new frmConnectTeam();
+            frmConnectTeam frm = new frmConnectTeam();//Begin building form for reconnection
             IPAddress ip = IPAddress.Parse(ipString);
             int port = int.Parse(portString);
-            Socket regSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
+            Socket regSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);//Create socket for the registry
+
+            //Try to unregister team
             try
             {
-                regSock.Connect(ip, port);
-                TCPHelper.sendMessage(message, regSock);
-                string respMessage = TCPHelper.receiveMessage(buffer, regSock);
-                response = MessageParser.parseMessage(respMessage);
+                regSock.Connect(ip, port);//Connect to registry
+                TCPHelper.sendMessage(message, regSock);//Send the disconnect messge
+                string respMessage = TCPHelper.receiveMessage(buffer, regSock);//Wait for response
+                response = MessageParser.parseMessage(respMessage);//Parse response by |
+                //Was the response OK?
                 isOK = MessageParser.checkOK(response[1]);
                 if (isOK == true)
                 {
+                    //Close current form and open new form
                     this.Hide();
                     frm.Show();
                     regSock.Disconnect(true);
@@ -51,9 +65,9 @@ namespace SOA_A1
                     regSock.Disconnect(true);
                 }
             }
-            catch
+            catch(Exception ex)
             {
-
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -76,6 +90,11 @@ namespace SOA_A1
             IPAddress ip = IPAddress.Parse(txtServiceIP.Text);
             byte[] buffer = new byte[1024];//buffer for storing messages received from service
             //Cycle through all arguments
+            bool isOK = false;
+            string responseMessage = "";
+            string[] responseMessageParsed = null;
+            string[] resps = null;
+            string[] parsedResp = null;
             foreach (Argument argument in flpArgs.Controls)
             {
                 argValue = argument.txtArgValue.Text;//get user input for argument
@@ -163,7 +182,28 @@ namespace SOA_A1
                     message = MessageBuilder.executeService(teamName, teamID, serviceName, args.Count, args);//Build the executeService 
                     service.Connect(ip, port);//Connect to the service's socket
                     TCPHelper.sendMessage(message, service);//Send the execute message to the service
-                    TCPHelper.receiveMessage(buffer, service);//Wait for a response from the service
+                    responseMessage = TCPHelper.receiveMessage(buffer, service);//Wait for a response from the service
+                    //Start handling message 
+                    responseMessageParsed = MessageParser.parseMessage(responseMessage);
+                    isOK = MessageParser.checkOK(responseMessageParsed[1]);
+                    //Check if the respnse is an OK or NOT-OK response
+                    if (isOK == true)
+                    {
+                        resps = MessageParser.respParser(MessageParser.parseMessageByEOS(responseMessage));
+
+                        foreach(string resp in resps)
+                        {
+                            parsedResp = MessageParser.parseMessage(resp);
+                            foreach(Response response in flpResps.Controls)
+                            {
+
+                            }
+                        }
+                    }
+                    else
+                    {
+
+                    }
                 }
             }
             catch (Exception ex)

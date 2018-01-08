@@ -22,17 +22,20 @@ namespace SOA_A1_Purchase_Totalizer
         static string config_serviceName = null;
         static int? config_securityLevel = null;
         static string config_description = null;
+        static int? config_localPort = null;
 
         //Service parameters:
         static int numArgs = 2;
         static int numResponses = 5;
         static List<string> listArgs = new List<string>(new string[] { "ARG|1|ProvinceOrTerritory|string|mandatory||", "ARG|2|PurchaseValue|float|mandatory||"});
-        static List<string> listResps = new List<string>(new string[] { "RSP|1|Subtotalamount|float||", "RSP|2|PSTamount|float||", "RSP|3|HSTamount|float||", "RSP|4|GSTamount|float||", "RSP|5|TotalpurchaseAmount|float||" });
+        static List<string> listResps = new List<string>(new string[] { "RSP|1|SubTotalAmount|float||", "RSP|2|PSTamount|float||", "RSP|3|HSTamount|float||", "RSP|4|GSTamount|float||", "RSP|5|TotalPurchaseAmount|float||" });
         static string myIP = "10.113.21.30";
-        static int config_localPort = 3000;
+        
 
         static void Main(string[] args)
         {
+
+
             //Try and load configuration file.
             if(LoadConfig())
             {
@@ -58,7 +61,7 @@ namespace SOA_A1_Purchase_Totalizer
                     config_description,
                     listArgs,
                     listResps,
-                    myIP, config_localPort);
+                    myIP, (int)config_localPort);
                 Logging.LogLine("Calling SOA-Registry with message :");
                 Logging.LogLine("\t" + message);
 
@@ -80,8 +83,10 @@ namespace SOA_A1_Purchase_Totalizer
                         Console.WriteLine("Service already registered: " + responseMessage);
                     }
 
+                    Console.WriteLine("Waiting for client connections:");
+
                     //Start listening for cient connections.
-                    TcpListener listener = new TcpListener(config_localPort);
+                    TcpListener listener = new TcpListener((int)config_localPort);
                     listener.Start();
 
                     while (true)
@@ -98,16 +103,6 @@ namespace SOA_A1_Purchase_Totalizer
                         socket.Receive(msgBuffer);
 
                         string clientMsg = Encoding.ASCII.GetString(msgBuffer);
-                        //while (true)
-                        //{
-                        //    int dicks = 0;
-                        //    string clientMsg = "";
-                        //    while(!clientMsg.Contains(EOM))
-                        //    {
-                        //        clientMsg += sr.ReadLine();
-                        //        Console.WriteLine(dicks++);
-                        //    }
-
                         if (clientMsg.Contains("DRC|EXEC-SERVICE|"))
                         {
                             try
@@ -119,32 +114,50 @@ namespace SOA_A1_Purchase_Totalizer
                                 string clientTeamName = clientArgs[2];
                                 string clientTeamID = clientArgs[3];
                                 string[] msgArgs = SOA_A1.MessageParser.argsParser(SOA_A1.MessageParser.parseMessageByEOS(clientMsg));
-                                string clientProvinceCode = msgArgs[0];
-                                decimal clientPurchaseValue = decimal.Parse(msgArgs[0]);
+                                string clientProvinceCode = SOA_A1.MessageParser.parseMessage(msgArgs[0])[5];
+                                decimal clientPurchaseValue = decimal.Parse(SOA_A1.MessageParser.parseMessage(msgArgs[1])[5]);
 
 
-                                //Communicate to registry to get team info and then check security level.
+                                //Communicate to registry to get team info.
                                 string queryTeamMessage = SOA_A1.MessageBuilder.queryTeam(config_teamName, config_teamID, clientTeamName, clientTeamID, config_tagName);
                                 Logging.LogLine("Calling SOA-Registry with message :");
-                                Logging.LogLine("\t" + message);
+                                Logging.LogLine("\t" + queryTeamMessage);
+                                SOA_A1.TCPHelper.sendMessage(queryTeamMessage, registry);
 
-                                SOA_A1.TCPHelper.sendMessage(message, registry);
                                 byte[] queryTeamBuffer = new byte[1024];
                                 string queryTeamresponseMessage = SOA_A1.TCPHelper.receiveMessage(queryTeamBuffer, registry);
                                 Logging.LogLine("\tResponse from SOA-Registry :");
                                 Logging.LogLine("\t\t" + queryTeamresponseMessage);
+                                Logging.LogLine("---");
 
-                                //Parse out security level.
-
-
-                                int clientSecurityLevel = ;
-                                if (clientSecurityLevel >= (int)config_securityLevel)
+                                if (queryTeamresponseMessage.Contains("SOA|OK|"))
                                 {
-                                    TaxBreakdown test = PurchaseTotalizer.Calculate(clientProvinceCode, clientPurchaseValue);
+                                    //Perform calculations and send response message.
+                                    TaxBreakdown results = PurchaseTotalizer.Calculate(clientProvinceCode, clientPurchaseValue);
+                                    if(results.Valid)
+                                    {
+                                        string resultsMessage = SOA_A1.MessageBuilder.executeServiceReply(
+                                            "RSP|1|SubTotalAmount|float|" + results.Sub_total_amount + "|",
+                                            "RSP|2|PSTamount|float|" + results.PST_amount + "|",
+                                            "RSP|3|HSTamount|float|" + results.HST_amount +"|",
+                                            "RSP|4|GSTamount|float|" + results.GST_amount +"|",
+                                            "RSP|5|TotalPurchaseAmount|float|" + results.Total_purchase_amount +"|");
+                                        Logging.LogLine("Responding to service request :");
+                                        Logging.LogLine("\t" + resultsMessage);
+                                        socket.Send(Encoding.ASCII.GetBytes(resultsMessage));
+                                        Logging.LogLine("---");
+                                    }
+                                    else
+                                    {
+                                        string resultsMessage = SOA_A1.MessageBuilder.executeServiceReplyError(-3, "Invalid parameters sent.");
+                                        socket.Send(Encoding.ASCII.GetBytes(resultsMessage));
+                                    }
+                                    //error -3
                                 }
-                                else
+                                else if(responseMessage.Contains("SOA|NOT-OK|"))
                                 {
-
+                                    //Send error message.
+                                    
                                 }
                             }
                             catch(Exception ex)
@@ -283,6 +296,10 @@ namespace SOA_A1_Purchase_Totalizer
                     {
                         config_description = twoRats[1].Replace("\r", "");
                     }
+                    else if (twoRats[0] == "client_port")
+                    {
+                        config_localPort = int.Parse(twoRats[1]);
+                    }
                 }
                 else if(twoRats.Length > 2)
                 {
@@ -314,7 +331,8 @@ namespace SOA_A1_Purchase_Totalizer
                 config_host_port != null ||
                 config_serviceName != null ||
                 config_securityLevel != null ||
-                config_description != null)
+                config_description != null ||
+                config_localPort != null)
             {
                 miaow = true;
             }
@@ -324,17 +342,15 @@ namespace SOA_A1_Purchase_Totalizer
 
         static void CreateConfig()
         {
-            string configFileString = @"teamname=
-teamId=
-tagName=
-serviceName=
-securityLevel=
-numArgs=
-numResponses=
-description=
-registryIP=
-registryPort=
-";
+            string configFileString = @"teamId=
+teamName=WesNet
+tagName=GIORP-TOTAL
+serviceName=purchaseTotalizer
+securityLevel=1
+description=This service totals the cost and tax and displays it broken down.
+host_ip=
+host_port=3128
+client_port=3000";
             File.WriteAllText(CONFIG_FILE_PATH, configFileString);
             Console.WriteLine("Created config file as none existed. Please fill it out.");
         }

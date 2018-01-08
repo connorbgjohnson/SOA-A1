@@ -1,4 +1,13 @@
-﻿using System;
+﻿/****************************** Module Header ******************************\
+Module Name:  frmConnectTeam.cs
+Project:      SOA-A1-User
+Programmer: Connor Johnson
+Date: 1/8/2018
+Contains the logic for the Form frmConnectTeam.cs
+
+\***************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -11,6 +20,7 @@ using System.Windows.Forms;
 using System.Net;
 using System.Net.Sockets;
 using System.IO;
+
 namespace SOA_A1
 {
     public partial class frmConnectTeam : Form

@@ -1,4 +1,12 @@
-﻿using System;
+﻿/****************************** Module Header ******************************\
+Module Name:  MessageParser.cs
+Project:      SOA-A1-User
+Programmer: Connor Johnson
+Date: 1/8/2018
+Description: Contains the class MessageParser
+\***************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,16 +31,29 @@ namespace SOA_A1
         const string RSP = "RSP";
         const string MCH = "MCH";
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+
         public static string[] parseMessage(string message)
         {
             string[] segments = message.Split('|');
             return segments;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
         public static string[] parseMessageByEOS(string message)
         {
             string[] segments = message.Split(EOS);
             return segments;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="status"></param>
         public static bool checkOK(string status)
         {
             bool OK = false;
@@ -47,6 +68,10 @@ namespace SOA_A1
 
             return OK;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lines"></param>
         public static string[] argsParser(string[] lines)
         {
             List<string> args = new List<string>();
@@ -61,6 +86,10 @@ namespace SOA_A1
             }
             return args.ToArray();
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lines"></param>
         public static string[] respParser(string[] lines)
         {
             List<string> rsps = new List<string>();
@@ -75,6 +104,10 @@ namespace SOA_A1
             }
             return rsps.ToArray();
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="serviceName"></param>
         public static string parseTag(string serviceName)
         {
             string tag = "";
@@ -96,14 +129,18 @@ namespace SOA_A1
             }
             return tag;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="segmentTag"></param>
+        /// <param name="lines"></param>
         public static string parseSegment(string segmentTag, string[] lines)
         {
             string segment = "";
             
             foreach (string line in lines)
             {
-                if (parseMessage(line)[0] == segmentTag)
+                if (parseMessage(line)[0].Contains(segmentTag))
                 {
                     segment = line;
                 }
