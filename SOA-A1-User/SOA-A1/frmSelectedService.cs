@@ -191,18 +191,21 @@ namespace SOA_A1
                     {
                         resps = MessageParser.respParser(MessageParser.parseMessageByEOS(responseMessage));
 
-                        foreach(string resp in resps)
+                        foreach(string resp in resps)//iterate through each response message segment
                         {
-                            parsedResp = MessageParser.parseMessage(resp);
-                            foreach(Response response in flpResps.Controls)
+                            parsedResp = MessageParser.parseMessage(resp);//parse each segment by |
+                            foreach(Response response in flpResps.Controls)//iterate through each response control on the form
                             {
-
+                                if (response.lblRespPosition.Text == parsedResp[1])//if the response position is equal to the field in the form...
+                                {
+                                    response.txtRespValue.Text = parsedResp[4];//Finally, fill the text field with the correct values
+                                }
                             }
                         }
                     }
                     else
                     {
-
+                        MessageBox.Show(responseMessageParsed[2] + responseMessageParsed[3]);//Display the error code and error if something went wrong
                     }
                 }
             }
