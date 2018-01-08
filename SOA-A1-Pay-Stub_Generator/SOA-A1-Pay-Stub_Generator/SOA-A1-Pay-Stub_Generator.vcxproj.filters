@@ -21,9 +21,18 @@
     <ClCompile Include="paystub.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="configFileIo.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="paystub.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="registry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="configFileIo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

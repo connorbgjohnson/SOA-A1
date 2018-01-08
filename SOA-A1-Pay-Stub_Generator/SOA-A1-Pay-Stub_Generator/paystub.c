@@ -9,20 +9,6 @@
 #include <string.h>
 #include <math.h>
 
-#define EMPLOYEE_VALUE_HOURLY "HOUR"
-#define EMPLOYEE_VALUE_FULLTIME "FULL"
-#define EMPLOYEE_VALUE_SEASONAL "SEASON"
-#define EMPLOYEE_VALUE_CONTRACT "CONTRACT"
-
-#define EMPLOYEE_CODE_HOURLY 0
-#define EMPLOYEE_CODE_FULLTIME 1
-#define EMPLOYEE_CODE_SEASONAL 2
-#define EMPLOYEE_CODE_CONTRACT 3
-
-#define ERROR_INVALID_EMPLOYEE_TYPE 1
-
-#define HOURS_IN_WEEK 40.0f
-
 int payStubGenerate(const char* employeeType, float hoursWorked, float payRate, int pieces, int weeksWorked, float* generatedPay)
 {
 	int error = 0;
@@ -35,7 +21,7 @@ int payStubGenerate(const char* employeeType, float hoursWorked, float payRate, 
 		}
 		else if (employeeCode == EMPLOYEE_CODE_FULLTIME)
 		{
-			*generatedPay =calculateFulltime(payRate);
+			*generatedPay = calculateFulltime(payRate);
 		}
 		else if (employeeCode == EMPLOYEE_CODE_SEASONAL)
 		{
