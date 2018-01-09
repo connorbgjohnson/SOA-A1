@@ -64,6 +64,7 @@
     <Compile Include="frmServiceSelection.Designer.cs">
       <DependentUpon>frmServiceSelection.cs</DependentUpon>
     </Compile>
+    <Compile Include="Logging.cs" />
     <Compile Include="MessageBuilder.cs" />
     <Compile Include="MessageParser.cs" />
     <Compile Include="frmConnectTeam.cs">

@@ -28,6 +28,11 @@ namespace SOA_A1
         public frmConnectTeam()
         {
             InitializeComponent();
+            Logging.LogLine("=======================================================");
+            Logging.LogLine("\t\t\t -- USER APP LOG --");
+            Logging.LogLine("Team:\t: WesNet (Connor Johnson, Lauchlin Morrison, Kyle Kreutzer, Colin Mills");
+            Logging.LogLine("=======================================================");
+
         }
 
         private void cmdConnect_Click(object sender, EventArgs e)//Button user clicks when trying to connect to the registry
@@ -63,8 +68,14 @@ namespace SOA_A1
                     regSock.Connect(ip, port);//Connect to the registry
                     //Build register team message
                     teamMessage = MessageBuilder.registerTeam(teamName);//Build the Register Team message
+                    Logging.LogLine("Calling SOA-Registry with message :");
+                    Logging.LogLine("\t" + teamMessage);
                     TCPHelper.sendMessage(teamMessage, regSock);
                     message = TCPHelper.receiveMessage(buffer, regSock);
+                    Logging.LogLine("\tResponse from SOA-Registry :");
+                    Logging.LogLine("\t\t" + message);
+                    Logging.LogLine("---");
+
                     response = MessageParser.parseMessage(message);
                     isOK = MessageParser.checkOK(response[1]);
                     //Check if the respnse is an OK or NOT-OK response
@@ -84,7 +95,6 @@ namespace SOA_A1
                 {
                     MessageBox.Show("ERROR:" + ex.Message);
                 }
-                
             }
         }
     }

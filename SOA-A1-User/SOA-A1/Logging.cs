@@ -9,7 +9,7 @@ namespace SOA_A1
 {
 	static class Logging
 	{
-		const string PATH = "purchase_totalizer.log";
+		const string PATH = "user.log";
 
 		//Services must log:
 
