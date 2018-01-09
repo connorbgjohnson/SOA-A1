@@ -85,8 +85,13 @@ namespace SOA_A1
             try
             {
                 regSock.Connect(regIP, regPort);//Connect to the registry socket
+                Logging.LogLine("Calling SOA-Registry with message :");
+                Logging.LogLine("\t" + message);
                 TCPHelper.sendMessage(message, regSock);//Send query service HL7 /message
                 string respMessage = TCPHelper.receiveMessage(buffer, regSock);//Wait for response
+                Logging.LogLine("\tResponse from SOA-Registry:");
+                Logging.LogLine("\t\t" + respMessage);
+                Logging.LogLine("---");
                 response = MessageParser.parseMessage(respMessage);//parse response into deliminated parts
                 isOK = MessageParser.checkOK(response[1]);//Check if OK or not
                 if (isOK == true)
@@ -119,7 +124,13 @@ namespace SOA_A1
                 else if (isOK == false)
                 {
                     MessageBox.Show("ERROR CODE: " + response[2] + "\n" + response[3]);
+                    if (response[3].Contains("Team Licence Expired"))
+                    {
+                        frmConnect.Show();
+                        this.Hide();
+                    }
                 }
+
                 
             }
             catch (Exception ex)
@@ -146,8 +157,13 @@ namespace SOA_A1
             try
             {
                 regSock.Connect(ip, port);
+                Logging.LogLine("Calling SOA-Registry with message :");
+                Logging.LogLine("\t" + message);
                 TCPHelper.sendMessage(message, regSock);
                 string respMessage = TCPHelper.receiveMessage(buffer, regSock);
+                Logging.LogLine("\tResponse from SOA-Registry:");
+                Logging.LogLine("\t\t" + respMessage);
+                Logging.LogLine("---");
                 response = MessageParser.parseMessage(respMessage);
                 isOK = MessageParser.checkOK(response[1]);
                 if (isOK == true)
