@@ -1,9 +1,34 @@
+/*
+	* Filename: build.c
+	*
+	* Description:
+	* Builds
+	* 
+	* 
+*/
+
 #include "registry.h"
 #include <stdio.h>
 #include "paystub.h"
 #include "configFileIo.h"
 
+/*
+* Function Name: BuildSrvTag(char**, const char* , const char*, const char* argDataTypem const char* mandatory)
+*
+*
+* Description:
+* Builds a request from a certain amount of things.
 
+* Parameters:
+* char** out: The out buffer
+* char* argPosition: The position
+* char* argName: The name
+* char* dataType: The datatype
+
+* Result:
+* void
+
+*/
 char* BuildSrvTag(char** out, const char* tagName, const char* serviceName, const char* secLevel, const char* numArgs, const char* numResp, const char* desc)
 {
 	size_t count = 0;
@@ -33,6 +58,23 @@ char* BuildSrvTag(char** out, const char* tagName, const char* serviceName, cons
 	out[count - 1] = EOS;
 }
 
+/*
+* Function Name: BuildArgs(char**, char* , char*, char* argDataTypem char* mandatory)
+*
+*
+* Description:
+* Builds a request from a certain amount of things.
+
+* Parameters:
+* char** out: The out buffer
+* char* argPosition: The position
+* char* argName: The name
+* char* dataType: The datatype
+
+* Result:
+* void
+
+*/
 void BuildTeamTag(char** out, char* teamName, char* teamId)
 {
 	size_t count = 0;
@@ -46,6 +88,25 @@ void BuildTeamTag(char** out, char* teamName, char* teamId)
 	strcat(*out, teamId);
 	strcat(*out, "|");
 }
+
+
+/*
+* Function Name: BuildArgs(char**, char* , char*, char* argDataTypem char* mandatory)
+*
+*
+* Description:
+* Builds a request from a certain amount of things.
+
+* Parameters:
+* char** out: The out buffer
+* char* argPosition: The position
+* char* argName: The name
+* char* dataType: The datatype
+
+* Result:
+* void
+
+*/
 
 void BuildArgs(char** out, char* argPosition, char* argName, char* argDataType, char* mandatory)
 {
@@ -69,6 +130,23 @@ void BuildArgs(char** out, char* argPosition, char* argName, char* argDataType, 
 	out[count - 1] = EOS;
 }
 
+/*
+* Function Name: BuildResponseTag(char**, char* , char*)
+*
+*
+* Description:
+* Builds a request from a certain amount of things.
+
+* Parameters:
+* char** out: The out buffer
+* char* ip: The position
+* char* port: The name
+* char* dataType: The datatype
+
+* Result:
+* void
+
+*/
 void BuildResponseTag(char** out, char* position, char* name, char* dataType)
 {
 	size_t count = 0;
@@ -87,7 +165,21 @@ void BuildResponseTag(char** out, char* position, char* name, char* dataType)
 	strcat(*out, dataType);
 
 }
+/*
+* Function Name: BuildIpTag(char**, char* , char*)
+*
+*
+* Description:
+* Builds a request from a certain amount of things.
 
+* Parameters:
+* char** out: The out buffer
+* char* ip: The ip 
+* char* port: THe port
+
+* Result:
+* void
+*/
 void BuildIpTag(char** out, char* ip, char* port)
 {
 	size_t count = 0;
@@ -103,7 +195,30 @@ void BuildIpTag(char** out, char* ip, char* port)
 	strcat(*out, "|");
 }
 
-void Build(char** out, char* teamName, char* teamId, char* tagName, char* serviceName, char* numArgs, char* numResponses, char* description, char* ip, char* port)
+/* 
+	* Function Name: Build(char**, char* , char*, char*, char*, char*, char*, char*, char*)
+	* 
+	*
+	* Description:
+	* Builds a request from a certain amount of things.
+
+	* Parameters:
+	* char** out: The buffer to put the string into.
+	* char* teamName: The teamname
+	* char*  tagName: The tagname
+	* char* teamId: The team id.
+	* char* tagName: The tag name
+	* char* serviceName: The service name
+	* char* numArgs: The number of args.
+	* char* numResponse: The number response
+	* char* description: The description
+	* char* ip: The ip 
+	* char* port: The port.
+
+	* Result:
+	* void
+*/
+void BuildRequest(char** out, char* teamName, char* teamId, char* tagName, char* serviceName, char* numArgs, char* numResponses, char* description, char* ip, char* port)
 {
 	char* srvTag = NULL;
 	char* teamTag = NULL;

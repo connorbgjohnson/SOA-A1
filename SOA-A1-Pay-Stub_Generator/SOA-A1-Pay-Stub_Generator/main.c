@@ -107,7 +107,7 @@ int main(int argc, char* argv)
 	const char* teamName = getConfigValue(configValues, keyValueCount, "teamName");
 	char* messageToSend = NULL;
 
-	Build(&messageToSend, teamName, teamId, tagName, serviceName, numArgs, numResponses, description, ip, port);
+	
 
 	closesocket(socket);
 	WSACleanup();
