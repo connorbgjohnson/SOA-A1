@@ -18,7 +18,6 @@
 
 SOCKET connectToRegistry(const char* registryIp, int registryPort);
 bool sendMessageToRegistry(SOCKET* socket, char* message);
-void registryRegister(SOCKET* socket, const char* teamName);
 
 
 #endif

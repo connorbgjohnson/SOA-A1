@@ -1,11 +1,17 @@
-﻿using System;
+﻿///Project: SOA-A1-Purchase-Totalizer
+///File: Logging.cs
+///Date: 2018/01/07
+///Author: Lauchlin Morrison
+///This file allows logging to a file.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace SOA_A1
+namespace SOA_A1_Purchase_Totalizer
 {
 	static class Logging
 	{
