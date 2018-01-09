@@ -1,13 +1,14 @@
 ///Project: SOA-A1-Pay-Stub_Generator
 ///File: main.c
 ///Date: 2018/01/06
-///Author: Lauchlin Morrison
+///Author: Kyle Kreutzer, Lauchlin Morrison, Connor Johnson, Colin Mills
 ///
 
 #include "registry.h"
 #include <stdio.h>
 #include "paystub.h"
 #include "configFileIo.h"
+
 
 
 //==================================================//
@@ -100,13 +101,14 @@ int main(int argc, char* argv)
 	const char* numArgs = getConfigValue(configValues, keyValueCount, "numArgs");
 	const char* numResponses = getConfigValue(configValues, keyValueCount, "numResponses");
 	const char* description = getConfigValue(configValues, keyValueCount, "description");
+	const char* teamName = getConfigValue(configValues, keyValueCount, "teamName");
+
+	char* teamString = NULL;
 
 	SOCKET socket = connectToRegistry(ip, atoi(port));
 
 	/* Register the service with the teamName on the registry */
-	const char* teamName = getConfigValue(configValues, keyValueCount, "teamName");
 	char* messageToSend = NULL;
-
 	
 
 	closesocket(socket);
