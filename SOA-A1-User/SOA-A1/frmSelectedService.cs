@@ -205,7 +205,7 @@ namespace SOA_A1
                     }
                     else
                     {
-                        MessageBox.Show(responseMessageParsed[2] + responseMessageParsed[3]);//Display the error code and error if something went wrong
+                        MessageBox.Show("ERROR CODE: " + responseMessageParsed[2] + "\n" + responseMessageParsed[3]);//Display the error code and error if something went wrong
                     }
                 }
             }
