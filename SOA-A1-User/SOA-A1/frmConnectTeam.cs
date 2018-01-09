@@ -83,16 +83,15 @@ namespace SOA_A1
                     {                        
                         FormBuilder.buildServiceSelection(teamName, response[2], response[3], ipAddressString, portString, frm);//pull out the new form
                         this.Hide();//put this form away
-                        regSock.Disconnect(true);
                     }
                     else if (isOK == false)
                     {
                         MessageBox.Show("ERROR CODE: " + response[2] + "\n" + response[3]);
-                        regSock.Disconnect(true);
                         if (response[3].Contains("Team Licence Expired"))
                         {
                             frmConnect.Show();
                             this.Hide();
+                            
                         }
                     }
                 }
