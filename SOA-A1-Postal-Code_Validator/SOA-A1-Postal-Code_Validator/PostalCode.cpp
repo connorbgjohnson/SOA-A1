@@ -7,8 +7,17 @@
 #include "PostalCode.h"
 #include <regex>
 
+using namespace std;
+
 namespace PostalCode
-{
+{	
+	/// <summary>
+	/// Validates the specified province code.
+	/// </summary>
+	/// <param name="provinceCode">The province code.</param>
+	/// <param name="postalCode">The postal code.</param>
+	/// <param name="specialNotes">The special notes.</param>
+	/// <returns></returns>
 	bool validate(string provinceCode, string postalCode, string &specialNotes)
 	{
 		bool isPostalCodeValid = false;
@@ -60,7 +69,12 @@ namespace PostalCode
 
 		return isPostalCodeValid;
 	}
-
+	
+	/// <summary>
+	/// Formats to upper.
+	/// </summary>
+	/// <param name="province">The province.</param>
+	/// <returns></returns>
 	string formatToUpper(string province)
 	{
 		string upperProvince = "";
@@ -72,7 +86,12 @@ namespace PostalCode
 
 		return upperProvince;
 	}
-
+	
+	/// <summary>
+	/// Formats the remove space.
+	/// </summary>
+	/// <param name="code">The code.</param>
+	/// <returns></returns>
 	string formatRemoveSpace(string code)
 	{
 		if (code[3] == ' ' && code.length() > 5)
@@ -82,7 +101,12 @@ namespace PostalCode
 
 		return code;
 	}
-
+	
+	/// <summary>
+	/// Validates the postal code format.
+	/// </summary>
+	/// <param name="code">The code.</param>
+	/// <returns></returns>
 	bool validatePostalCodeFormat(string code)
 	{
 		bool isValid = false;
@@ -95,7 +119,13 @@ namespace PostalCode
 
 		return isValid;
 	}
-
+	
+	/// <summary>
+	/// Validates the postal code.
+	/// </summary>
+	/// <param name="province">The province.</param>
+	/// <param name="code">The code.</param>
+	/// <returns></returns>
 	bool validatePostalCode(string province, string code)
 	{
 		bool isValid = false;
@@ -721,7 +751,12 @@ namespace PostalCode
 
 		return msg;
 	}
-
+	
+	/// <summary>
+	/// Validates the province.
+	/// </summary>
+	/// <param name="province">The province.</param>
+	/// <returns></returns>
 	bool validateProvince(string province)
 	{
 		bool foundProvince = false;
@@ -745,7 +780,12 @@ namespace PostalCode
 
 		return foundProvince;
 	}
-
+	
+	/// <summary>
+	/// Checks if code structure error.
+	/// </summary>
+	/// <param name="code">The code.</param>
+	/// <returns></returns>
 	bool checkIfCodeStructureError(string code)
 	{
 		bool isValid = true;
@@ -758,7 +798,12 @@ namespace PostalCode
 
 		return isValid;
 	}
-
+	
+	/// <summary>
+	/// Checks if letter error.
+	/// </summary>
+	/// <param name="code">The code.</param>
+	/// <returns></returns>
 	bool checkIfLetterError(string code)
 	{
 		bool isValid = true;

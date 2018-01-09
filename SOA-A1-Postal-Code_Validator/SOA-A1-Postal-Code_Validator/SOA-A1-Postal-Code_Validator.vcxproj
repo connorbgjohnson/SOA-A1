@@ -111,11 +111,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ConfigReader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PostalCode.cpp" />
+    <ClCompile Include="PostalCodeService.cpp" />
+    <ClCompile Include="Registry.cpp" />
+    <ClCompile Include="split.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ConfigReader.h" />
     <ClInclude Include="PostalCode.h" />
+    <ClInclude Include="PostalCodeService.h" />
+    <ClInclude Include="Registry.h" />
+    <ClInclude Include="split.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
