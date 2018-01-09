@@ -104,14 +104,13 @@ namespace SOA_A1_Purchase_Totalizer
                         Console.WriteLine(DateTime.Now.ToString("yyyy-dd-mm hh:mm:ss") + " - Service published.");
                     }
 
-                    Console.WriteLine(DateTime.Now.ToString("yyyy-dd-mm hh:mm:ss") + " - Waiting for client connections:");
-
                     //Start listening for cient connections.
                     TcpListener listener = new TcpListener((int)config_localPort);
                     listener.Start();
 
                     while (true)
                     {
+                        Console.WriteLine(DateTime.Now.ToString("yyyy-dd-mm hh:mm:ss") + " - Waiting for client connections:");
                         clientSocket = listener.AcceptSocket(); //blocks
                         Console.WriteLine(DateTime.Now.ToString("yyyy-dd-mm hh:mm:ss") + " - Client request received.");
                         Stream clientStream = new NetworkStream(clientSocket);
