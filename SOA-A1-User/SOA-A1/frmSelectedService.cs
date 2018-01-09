@@ -47,8 +47,14 @@ namespace SOA_A1
             try
             {
                 regSock.Connect(ip, port);//Connect to registry
+                Logging.LogLine("Calling SOA-Registry with message :");
+                Logging.LogLine("\t" + message);
                 TCPHelper.sendMessage(message, regSock);//Send the disconnect messge
                 string respMessage = TCPHelper.receiveMessage(buffer, regSock);//Wait for response
+                Logging.LogLine("\tResponse from SOA-Registry:");
+                Logging.LogLine("\t\t" + respMessage);
+                Logging.LogLine("---");
+
                 response = MessageParser.parseMessage(respMessage);//Parse response by |
                 //Was the response OK?
                 isOK = MessageParser.checkOK(response[1]);
@@ -181,28 +187,39 @@ namespace SOA_A1
                 {
                     message = MessageBuilder.executeService(teamName, teamID, serviceName, args.Count, args);//Build the executeService 
                     service.Connect(ip, port);//Connect to the service's socket
+                    Logging.LogLine("Sending service request to IP " + ip +", PORT" + port + " :");
+                    Logging.LogLine("\t" + message);
                     TCPHelper.sendMessage(message, service);//Send the execute message to the service
                     responseMessage = TCPHelper.receiveMessage(buffer, service);//Wait for a response from the service
+                    Logging.LogLine("\tResponse from Published Service: ");
+                    Logging.LogLine("\t\t" + responseMessage);
+                    Logging.LogLine("---");
                     //Start handling message 
                     responseMessageParsed = MessageParser.parseMessage(responseMessage);
-                    isOK = MessageParser.checkOK(responseMessageParsed[1]);
+                    if (responseMessage != null)
+                    {
+                        isOK = MessageParser.checkOK(responseMessageParsed[1]);
+                    }
                     //Check if the respnse is an OK or NOT-OK response
                     if (isOK == true)
                     {
                         resps = MessageParser.respParser(MessageParser.parseMessageByEOS(responseMessage));
 
-                        foreach(string resp in resps)
+                        foreach(string resp in resps)//iterate through each response message segment
                         {
-                            parsedResp = MessageParser.parseMessage(resp);
-                            foreach(Response response in flpResps.Controls)
+                            parsedResp = MessageParser.parseMessage(resp);//parse each segment by |
+                            foreach(Response response in flpResps.Controls)//iterate through each response control on the form
                             {
-
+                                if (response.lblRespPosition.Text == parsedResp[1])//if the response position is equal to the field in the form...
+                                {
+                                    response.txtRespValue.Text = parsedResp[4];//Finally, fill the text field with the correct values
+                                }
                             }
                         }
                     }
                     else
                     {
-
+                        MessageBox.Show("ERROR CODE: " + responseMessageParsed[2] + "\n" + responseMessageParsed[3]);//Display the error code and error if something went wrong
                     }
                 }
             }
@@ -210,6 +227,17 @@ namespace SOA_A1
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        private void cmdBack_Click(object sender, EventArgs e)
+        {
+            string teamName = txtTeamName.Text;
+            string teamID = txtTeamID.Text;
+            string serviceName = txtServiceName.Text;
+            frmServiceSelection frm = new frmServiceSelection();
+            FormBuilder.buildServiceSelection(teamName, teamID, txtExpiration.Text, txtRegistryIP.Text, txtRegistryPort.Text, frm);
+            
+            this.Hide();
         }
     }
 }
