@@ -72,18 +72,23 @@ namespace SOA_A1_Purchase_Totalizer
                 string responseMessage = SOA_A1.TCPHelper.receiveMessage(buffer, registrySocket);
                 Logging.LogLine("\tResponse from SOA-Registry :");
                 Logging.LogLine("\t\t" + responseMessage);
+                Logging.LogLine("---");
                 registrySocket.Close();
 
                 if(responseMessage.Contains("SOA|NOT-OK|") && !responseMessage.Contains("has already published service"))
                 {
-                    Console.WriteLine("An error occured.");
-                    Logging.LogLine("!!!An error occured.!!!");
+                    Console.WriteLine("An error occured!");
+                    Logging.LogLine("An error occured!");
                 }
                 else if(responseMessage.Contains("SOA|OK|") || responseMessage.Contains("has already published service"))
                 {
                     if(responseMessage.Contains("has already published service"))
                     {
-                        Console.WriteLine("Service already registered: " + responseMessage);
+                        Console.WriteLine("Service is already published.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Service published.");
                     }
 
                     Console.WriteLine("Waiting for client connections:");
@@ -111,6 +116,7 @@ namespace SOA_A1_Purchase_Totalizer
                             try
                             {
                                 Logging.LogLine("\t" + clientMsg);
+                                Logging.LogLine("---");
 
                                 //Parse args and client info.
                                 string[] clientArgs = SOA_A1.MessageParser.parseMessage(SOA_A1.MessageParser.parseSegment("DRC", SOA_A1.MessageParser.parseMessageByEOS(clientMsg)));
@@ -155,14 +161,21 @@ namespace SOA_A1_Purchase_Totalizer
                                     else
                                     {
                                         string resultsMessage = SOA_A1.MessageBuilder.executeServiceReplyError(-3, "Invalid parameters sent.");
+                                        Logging.LogLine("Responding to service request :");
+                                        Logging.LogLine("\t" + resultsMessage);
                                         clientSocket.Send(Encoding.ASCII.GetBytes(resultsMessage));
+                                        Logging.LogLine("---");
                                     }
-                                    //error -3
                                 }
-                                else if(responseMessage.Contains("SOA|NOT-OK|"))
+                                else if(queryTeamresponseMessage.Contains("SOA|NOT-OK|"))
                                 {
                                     //Send error message.
-                                    
+                                    int getErrorNumber = int.Parse(SOA_A1.MessageParser.parseMessage(queryTeamresponseMessage)[2]);
+                                    string resultsMessage = SOA_A1.MessageBuilder.executeServiceReplyError(-4, SOA_A1.MessageParser.parseMessage(queryTeamresponseMessage)[3]);
+                                    Logging.LogLine("Responding to service request :");
+                                    Logging.LogLine("\t" + resultsMessage);
+                                    clientSocket.Send(Encoding.ASCII.GetBytes(resultsMessage));
+                                    Logging.LogLine("---");
                                 }
                             }
                             catch(Exception ex)
@@ -170,7 +183,6 @@ namespace SOA_A1_Purchase_Totalizer
                                 Console.WriteLine(ex.Message);
                             }
                         }
-                        //}
                         
                         clientStream.Close();
                         clientSocket.Close();
@@ -180,27 +192,6 @@ namespace SOA_A1_Purchase_Totalizer
                 {
                     Console.WriteLine("Unhandled Error Occured.");
                 }
-                
-
-                //Start waiting for messages.
-
-
-                //Probably do something about ending the app.
-
-
-
-
-                //This is an example.
-                //TaxBreakdown test = PurchaseTotalizer.Calculate("AB", 899.99m);
-                //Console.WriteLine("IsValid: {0}\nSub Total: {1}\nPST: {2}\nHST: {3}\nGST: {4}\nTotal: {5}",
-                //    test.Valid,
-                //    test.Sub_total_amount,
-                //    test.PST_amount,
-                //    test.HST_amount,
-                //    test.GST_amount,
-                //    test.Total_purchase_amount);
-
-
             }
             else
             {
@@ -236,15 +227,6 @@ namespace SOA_A1_Purchase_Totalizer
                     {
                         Console.WriteLine("Unable to parse config file.");
                     }
-
-                    //config_teamID
-                    //config_tagName
-                    //config_teamName
-                    //config_host_ip
-                    //config_host_port
-                    //config_serviceName
-                    //config_securityLevel
-                    //config_description
                 }
             }
             else
@@ -254,6 +236,7 @@ namespace SOA_A1_Purchase_Totalizer
 
             return status;
         }
+
 
         /// <summary>
         /// Parse the configuration file.
@@ -324,6 +307,7 @@ namespace SOA_A1_Purchase_Totalizer
 
             return success;
         }
+
 
         //Check that all the configuration stuff got added.
         static bool CheckAllConfigValuesAreFilledIn()

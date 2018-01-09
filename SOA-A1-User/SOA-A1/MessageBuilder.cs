@@ -27,7 +27,7 @@ namespace SOA_A1
         public static string queryTeam(string teamName, string teamID, string serviceTeamName, string serviceTeamID, string tagName)
         {
             string message = "";
-            message = BOM + "DRC|QUERY-TEAM|" + teamName + "|" + teamID + "|" + EOS + "INF|" + serviceTeamName + "|" + serviceTeamID + "|" + tagName + EOS + EOM + EOS;
+            message = BOM + "DRC|QUERY-TEAM|" + teamName + "|" + teamID + "|" + EOS + "INF|" + serviceTeamName + "|" + serviceTeamID + "|" + tagName + "|" + EOS + EOM + EOS;
             return message;
         }
 
