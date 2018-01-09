@@ -78,9 +78,10 @@ namespace SOA_A1_Purchase_Totalizer
                 Logging.LogLine("\tResponse from SOA-Registry :");
                 Logging.LogLine("\t\t" + responseMessage);
                 Logging.LogLine("---");
+                registrySocket.Shutdown(SocketShutdown.Both);
                 registrySocket.Close();
 
-                if(responseMessage.Contains("SOA|NOT-OK|") && !responseMessage.Contains("has already published service"))
+                if (responseMessage.Contains("SOA|NOT-OK|") && !responseMessage.Contains("has already published service"))
                 {
                     if(responseMessage.Contains("is not registered"))
                     {
@@ -153,6 +154,7 @@ namespace SOA_A1_Purchase_Totalizer
                                 Logging.LogLine("\tResponse from SOA-Registry :");
                                 Logging.LogLine("\t\t" + queryTeamresponseMessage);
                                 Logging.LogLine("---");
+                                registrySocket.Shutdown(SocketShutdown.Both);
                                 registrySocket.Close();
 
                                 if (queryTeamresponseMessage.Contains("SOA|OK|"))
@@ -217,8 +219,9 @@ namespace SOA_A1_Purchase_Totalizer
                                 Console.WriteLine(DateTime.Now.ToString("yyyy-dd-mm hh:mm:ss") + " - Exception: " + ex.Message);
                             }
                         }
-                        
+
                         clientStream.Close();
+                        clientSocket.Shutdown(SocketShutdown.Both);
                         clientSocket.Close();
                     }
                 }

@@ -106,49 +106,49 @@ namespace SOA_A1
                 argValue = argument.txtArgValue.Text;//get user input for argument
 
                 //Check the datatype of the argument and then compare the value to the datatype specified
-                if (argument.lblArgDataType.Text == "CHAR")
+                if (argument.lblArgDataType.Text.ToUpper() == "CHAR")
                 {
                     if (char.TryParse(argValue, out char result))
                     {
                         parse = true;
                     }
                 }
-                else if (argument.lblArgDataType.Text == "SHORT")
+                else if (argument.lblArgDataType.Text.ToUpper() == "SHORT")
                 {
                     if (short.TryParse(argValue, out short result))
                     {
                         parse = true;
                     }
                 }
-                else if (argument.lblArgDataType.Text == "INT")
+                else if (argument.lblArgDataType.Text.ToUpper() == "INT")
                 {
                     if (int.TryParse(argValue, out int result))
                     {
                         parse = true;
                     }
                 }
-                else if (argument.lblArgDataType.Text == "LONG")
+                else if (argument.lblArgDataType.Text.ToUpper() == "LONG")
                 {
                     if (long.TryParse(argValue, out long result))
                     {
                         parse = true;
                     }
                 }
-                else if (argument.lblArgDataType.Text == "FLOAT")
+                else if (argument.lblArgDataType.Text.ToUpper() == "FLOAT")
                 {
                     if (float.TryParse(argValue, out float result))
                     {
                         parse = true;
                     }
                 }
-                else if (argument.lblArgDataType.Text == "DOUBLE")
+                else if (argument.lblArgDataType.Text.ToUpper() == "DOUBLE")
                 {
                     if (double.TryParse(argValue, out double result))
                     {
                         parse = true;
                     }
                 }
-                else if (argument.lblArgDataType.Text == "STRING")
+                else if (argument.lblArgDataType.Text.ToUpper() == "STRING")
                 {
                     parse = true;
                 }

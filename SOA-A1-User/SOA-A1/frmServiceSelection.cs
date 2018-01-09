@@ -130,13 +130,10 @@ namespace SOA_A1
                         this.Hide();
                     }
                 }
-
-                
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-               
             }
 
         }
@@ -180,7 +177,6 @@ namespace SOA_A1
             }
             catch
             {
-
             }
         }
 

@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace SOA_A1
+namespace SOA_A1_Purchase_Totalizer
 {
 	static class Logging
 	{
