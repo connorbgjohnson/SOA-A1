@@ -1,7 +1,7 @@
 ///Project: SOA-A1-Pay-Stub_Generator
 ///File: main.c
 ///Date: 2018/01/06
-///Author: Lauchlin Morrison
+///Author: Kyle Kreutzer, Lauchlin Morrison, Connor Johnson, Colin Mills
 ///
 
 #include "registry.h"
@@ -9,48 +9,12 @@
 #include "paystub.h"
 #include "configFileIo.h"
 
-int main(int argc, char* argv)
-{
-	char* tagName = "PAYROLL";
-	
-	char d = EOM;
 
-	/* Get configuration file key/value pairs */
-	int keyValueCount = 0;
-	KeyValuePair* configValues = loadConfigFile("config.cfg", &keyValueCount);
-
-	/* Get host IP and port from the loaded configuration pairs and attempt connection */
-	const char* ip = getConfigValue(configValues, keyValueCount, "host_ip");
-	const char* port = getConfigValue(configValues, keyValueCount, "host_port");
-	SOCKET socket = connectToRegistry(ip, atoi(port));
-
-	/* Register the service with the teamName on the registry */
-	const char* teamName = getConfigValue(configValues, keyValueCount, "teamName");
-	registryRegister(&socket, teamName);
-
-	closesocket(socket);
-	WSACleanup();
-
-	//sendMessageToRegistry(&sock, "")
-	float generatedPay = 0;
-	printf("Error code: %d \n", payStubGenerate("HOUR", 36.0f, 15.23f, 0, 0, &generatedPay));
-	printf("Float value: %2.6f \n\n", generatedPay);
-
-	printf("Error code: %d \n", payStubGenerate("FULL", 40.0f, 56000.00f, 0, 0, &generatedPay));
-	printf("Float value: %2.6f \n\n", generatedPay);
-
-	printf("Error code: %d \n", payStubGenerate("SEASON", 36.0f, 2.30f, 360, 0, &generatedPay));
-	printf("Float value: %2.6f \n\n", generatedPay);
-
-	printf("Error code: %d \n", payStubGenerate("CONTRACT", 40.0f, 9699.99f, 0, 4, &generatedPay));
-	printf("Float value: %2.6f \n\n", generatedPay);
-
-	return 0;
-}
 
 //==================================================//
 //					SOCKET METHODS					//
 //==================================================//
+
 
 SOCKET connectToRegistry(const char* registryIp, int registryPort)
 {
@@ -99,6 +63,7 @@ bool sendMessageToRegistry(SOCKET* socket, char* message)
 	return success;
 }
 
+
 char* getResponseFromRegistry(SOCKET* socket)
 {
 	int responseSize = 0;
@@ -110,7 +75,7 @@ char* getResponseFromRegistry(SOCKET* socket)
 		printf("Failed to receive message from registry.");
 		free(responseMessage);
 	}
-	
+
 	return responseMessage;
 }
 
@@ -118,20 +83,50 @@ char* getResponseFromRegistry(SOCKET* socket)
 //					COMMUNICATION METHODS					//
 //==========================================================//
 
-void registryRegister(SOCKET* socket, const char* teamName)
+int main(int argc, char* argv)
 {
-	char* beginSegment = "\vDRC|REG-TEAM|||\nINF|";
-	char* endSegment = "|||\n\x1c\n";
-	int strLength = strlen(beginSegment) + strlen(endSegment) + strlen(teamName);
+	char* tagName = "PAYROLL";
+	
+	char d = EOM;
 
-	/* Create register message char array and build message */
-	char* registerMessage = calloc(strLength + 1, sizeof(char));
-	strncpy(registerMessage, beginSegment, strlen(beginSegment));
-	strncat(registerMessage, teamName, strlen(teamName));
-	strncat(registerMessage, endSegment, strlen(endSegment));
+	/* Get configuration file key/value pairs */
+	int keyValueCount = 0;
+	KeyValuePair* configValues = loadConfigFile("config.cfg", &keyValueCount);
 
-	sendMessageToRegistry(socket, registerMessage);
-	char* response = getResponseFromRegistry(socket);
+	/* Get host IP and port from the loaded configuration pairs and attempt connection */
+	const char* ip = getConfigValue(configValues, keyValueCount, "host_ip");
+	const char* port = getConfigValue(configValues, keyValueCount, "host_port");
+	const char* teamId = getConfigValue(configValues, keyValueCount, "teamId");
+	const char* serviceName = getConfigValue(configValues, keyValueCount, "serviceName");
+	const char* numArgs = getConfigValue(configValues, keyValueCount, "numArgs");
+	const char* numResponses = getConfigValue(configValues, keyValueCount, "numResponses");
+	const char* description = getConfigValue(configValues, keyValueCount, "description");
+	const char* teamName = getConfigValue(configValues, keyValueCount, "teamName");
 
-	free(registerMessage);
+	char* teamString = NULL;
+
+	SOCKET socket = connectToRegistry(ip, atoi(port));
+
+	/* Register the service with the teamName on the registry */
+	char* messageToSend = NULL;
+	
+
+	closesocket(socket);
+	WSACleanup();
+
+	//sendMessageToRegistry(&sock, "")
+	float generatedPay = 0;
+	printf("Error code: %d \n", payStubGenerate("HOUR", 36.0f, 15.23f, 0, 0, &generatedPay));
+	printf("Float value: %2.6f \n\n", generatedPay);
+
+	printf("Error code: %d \n", payStubGenerate("FULL", 40.0f, 56000.00f, 0, 0, &generatedPay));
+	printf("Float value: %2.6f \n\n", generatedPay);
+
+	printf("Error code: %d \n", payStubGenerate("SEASON", 36.0f, 2.30f, 360, 0, &generatedPay));
+	printf("Float value: %2.6f \n\n", generatedPay);
+
+	printf("Error code: %d \n", payStubGenerate("CONTRACT", 40.0f, 9699.99f, 0, 4, &generatedPay));
+	printf("Float value: %2.6f \n\n", generatedPay);
+
+	return 0;
 }

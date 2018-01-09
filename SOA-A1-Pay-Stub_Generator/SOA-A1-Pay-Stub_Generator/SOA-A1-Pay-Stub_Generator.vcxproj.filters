@@ -24,6 +24,9 @@
     <ClCompile Include="configFileIo.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="build.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="paystub.h">

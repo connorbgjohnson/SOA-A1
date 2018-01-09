@@ -1,7 +1,7 @@
 ﻿/****************************** Module Header ******************************\
 Module Name:  MessageParser.cs
 Project:      SOA-A1-User
-Programmer: Connor Johnson
+Programmer: Connor Johnson, Lauchlin Morrison
 Date: 1/8/2018
 Description: Contains the class MessageParser
 \***************************************************************************/

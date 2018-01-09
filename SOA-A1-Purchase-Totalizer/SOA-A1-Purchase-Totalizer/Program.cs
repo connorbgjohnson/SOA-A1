@@ -1,4 +1,10 @@
-﻿using System;
+﻿///Project: SOA-A1-Purchase-Totalizer
+///File: Program.cs
+///Date: 2018/01/05
+///Author: Lauchlin Morrison
+///This file holds the majority of the communication through the happy path for the service.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +28,7 @@ namespace SOA_A1_Purchase_Totalizer
         static string config_serviceName = null;
         static int? config_securityLevel = null;
         static string config_description = null;
+        static string config_localIP = null;
         static int? config_localPort = null;
 
         //Service parameters:
@@ -29,27 +36,27 @@ namespace SOA_A1_Purchase_Totalizer
         static int numResponses = 5;
         static List<string> listArgs = new List<string>(new string[] { "ARG|1|ProvinceOrTerritory|string|mandatory||", "ARG|2|PurchaseValue|float|mandatory||"});
         static List<string> listResps = new List<string>(new string[] { "RSP|1|SubTotalAmount|float||", "RSP|2|PSTamount|float||", "RSP|3|HSTamount|float||", "RSP|4|GSTamount|float||", "RSP|5|TotalPurchaseAmount|float||" });
-        static string myIP = "10.113.21.30";
         
-
         static void Main(string[] args)
         {
-
+            Socket registrySocket = null;
+            Socket clientSocket = null;
 
             //Try and load configuration file.
-            if(LoadConfig())
+            if (LoadConfig())
             {
                 //Log startup message.
-                Logging.LogLine("=================================================================");
+                Logging.LogLine("=======================================================");
                 Logging.LogLine(string.Format("Team\t: {0}", config_teamName));
                 Logging.LogLine(string.Format("Tag-name: {0}", config_tagName));
-                Logging.LogLine("Service: " + "purchaseTotalizer");
-                Logging.LogLine("=================================================================");
+                Logging.LogLine("Service: " + config_serviceName);
+                Logging.LogLine("=======================================================");
                 Logging.LogLine("---");
 
                 //Publish service to registry.
-                Socket registry = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                registry.Connect(config_host_ip, (int)config_host_port);
+                registrySocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                registrySocket.Connect(config_host_ip, (int)config_host_port);
+
                 string message = SOA_A1.MessageBuilder.publishService(
                     config_teamName,
                     config_teamID,
@@ -61,29 +68,42 @@ namespace SOA_A1_Purchase_Totalizer
                     config_description,
                     listArgs,
                     listResps,
-                    myIP, (int)config_localPort);
+                    config_localIP, (int)config_localPort);
                 Logging.LogLine("Calling SOA-Registry with message :");
                 Logging.LogLine("\t" + message);
 
-                SOA_A1.TCPHelper.sendMessage(message, registry);
+                SOA_A1.TCPHelper.sendMessage(message, registrySocket);
                 byte[] buffer = new byte[1024];
-                string responseMessage = SOA_A1.TCPHelper.receiveMessage(buffer, registry);
+                string responseMessage = SOA_A1.TCPHelper.receiveMessage(buffer, registrySocket);
                 Logging.LogLine("\tResponse from SOA-Registry :");
                 Logging.LogLine("\t\t" + responseMessage);
+                Logging.LogLine("---");
+                registrySocket.Shutdown(SocketShutdown.Both);
+                registrySocket.Close();
 
-                if(responseMessage.Contains("SOA|NOT-OK|") && !responseMessage.Contains("has already published service"))
+                if (responseMessage.Contains("SOA|NOT-OK|") && !responseMessage.Contains("has already published service"))
                 {
-                    Console.WriteLine("An error occured.");
-                    Logging.LogLine("!!!An error occured.!!!");
+                    if(responseMessage.Contains("is not registered"))
+                    {
+                        Logging.LogLine("The team is not registered.");
+                        Console.WriteLine(DateTime.Now.ToString("yyyy-dd-mm hh:mm:ss") + " - The team is not registered.");
+                    }
+                    else
+                    {
+                        Logging.LogLine("An error occured!");
+                        Console.WriteLine(DateTime.Now.ToString("yyyy-dd-mm hh:mm:ss") + " - An error occured!");
+                    }
                 }
                 else if(responseMessage.Contains("SOA|OK|") || responseMessage.Contains("has already published service"))
                 {
                     if(responseMessage.Contains("has already published service"))
                     {
-                        Console.WriteLine("Service already registered: " + responseMessage);
+                        Console.WriteLine(DateTime.Now.ToString("yyyy-dd-mm hh:mm:ss") + " - Service is already published.");
                     }
-
-                    Console.WriteLine("Waiting for client connections:");
+                    else
+                    {
+                        Console.WriteLine(DateTime.Now.ToString("yyyy-dd-mm hh:mm:ss") + " - Service published.");
+                    }
 
                     //Start listening for cient connections.
                     TcpListener listener = new TcpListener((int)config_localPort);
@@ -91,16 +111,18 @@ namespace SOA_A1_Purchase_Totalizer
 
                     while (true)
                     {
-                        Socket socket = listener.AcceptSocket(); //blocks
-                        Stream stream = new NetworkStream(socket);
+                        Console.WriteLine(DateTime.Now.ToString("yyyy-dd-mm hh:mm:ss") + " - Waiting for client connections:");
+                        clientSocket = listener.AcceptSocket(); //blocks
+                        Console.WriteLine(DateTime.Now.ToString("yyyy-dd-mm hh:mm:ss") + " - Client request received.");
+                        Stream clientStream = new NetworkStream(clientSocket);
 
                         Logging.LogLine("Receiving service request :");
-                        StreamReader sr = new StreamReader(stream);
-                        StreamWriter sw = new StreamWriter(stream);
+                        StreamReader sr = new StreamReader(clientStream);
+                        StreamWriter sw = new StreamWriter(clientStream);
                         sw.AutoFlush = true;
 
                         byte[] msgBuffer = new byte[1024];
-                        socket.Receive(msgBuffer);
+                        clientSocket.Receive(msgBuffer);
 
                         string clientMsg = Encoding.ASCII.GetString(msgBuffer);
                         if (clientMsg.Contains("DRC|EXEC-SERVICE|"))
@@ -108,6 +130,7 @@ namespace SOA_A1_Purchase_Totalizer
                             try
                             {
                                 Logging.LogLine("\t" + clientMsg);
+                                Logging.LogLine("---");
 
                                 //Parse args and client info.
                                 string[] clientArgs = SOA_A1.MessageParser.parseMessage(SOA_A1.MessageParser.parseSegment("DRC", SOA_A1.MessageParser.parseMessageByEOS(clientMsg)));
@@ -117,21 +140,27 @@ namespace SOA_A1_Purchase_Totalizer
                                 string clientProvinceCode = SOA_A1.MessageParser.parseMessage(msgArgs[0])[5];
                                 decimal clientPurchaseValue = decimal.Parse(SOA_A1.MessageParser.parseMessage(msgArgs[1])[5]);
 
-
                                 //Communicate to registry to get team info.
+                                registrySocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                                registrySocket.Connect(config_host_ip, (int)config_host_port);
                                 string queryTeamMessage = SOA_A1.MessageBuilder.queryTeam(config_teamName, config_teamID, clientTeamName, clientTeamID, config_tagName);
+                                Console.Write(DateTime.Now.ToString("yyyy-dd-mm hh:mm:ss") + " - Checking team with registry...   ");
                                 Logging.LogLine("Calling SOA-Registry with message :");
                                 Logging.LogLine("\t" + queryTeamMessage);
-                                SOA_A1.TCPHelper.sendMessage(queryTeamMessage, registry);
 
+                                SOA_A1.TCPHelper.sendMessage(queryTeamMessage, registrySocket);
                                 byte[] queryTeamBuffer = new byte[1024];
-                                string queryTeamresponseMessage = SOA_A1.TCPHelper.receiveMessage(queryTeamBuffer, registry);
+                                string queryTeamresponseMessage = SOA_A1.TCPHelper.receiveMessage(queryTeamBuffer, registrySocket);
                                 Logging.LogLine("\tResponse from SOA-Registry :");
                                 Logging.LogLine("\t\t" + queryTeamresponseMessage);
                                 Logging.LogLine("---");
+                                registrySocket.Shutdown(SocketShutdown.Both);
+                                registrySocket.Close();
 
                                 if (queryTeamresponseMessage.Contains("SOA|OK|"))
                                 {
+                                    Console.WriteLine("Team is OK!");
+
                                     //Perform calculations and send response message.
                                     TaxBreakdown results = PurchaseTotalizer.Calculate(clientProvinceCode, clientPurchaseValue);
                                     if(results.Valid)
@@ -144,68 +173,76 @@ namespace SOA_A1_Purchase_Totalizer
                                             "RSP|5|TotalPurchaseAmount|float|" + results.Total_purchase_amount +"|");
                                         Logging.LogLine("Responding to service request :");
                                         Logging.LogLine("\t" + resultsMessage);
-                                        socket.Send(Encoding.ASCII.GetBytes(resultsMessage));
+                                        clientSocket.Send(Encoding.ASCII.GetBytes(resultsMessage));
                                         Logging.LogLine("---");
+                                        Console.WriteLine(DateTime.Now.ToString("yyyy-dd-mm hh:mm:ss") +
+                                            " - Replying to client:\n\tFrom Client:\n\t\tProvinceOrTerritory=" + clientProvinceCode +
+                                            "\n\t\tPurchaseValue=" + clientPurchaseValue +
+                                            "\n\tTo Client: SubTotalAmount=" + results.Sub_total_amount +
+                                            "\n\t\tPSTamount=" + results.PST_amount +
+                                            "\n\t\tHSTamount=" + results.HST_amount +
+                                            "\n\t\tGSTamount=" + results.GST_amount +
+                                            "\n\t\tTotalPurchaseAmount=" + results.Total_purchase_amount);
                                     }
                                     else
                                     {
                                         string resultsMessage = SOA_A1.MessageBuilder.executeServiceReplyError(-3, "Invalid parameters sent.");
-                                        socket.Send(Encoding.ASCII.GetBytes(resultsMessage));
+                                        Logging.LogLine("Responding to service request :");
+                                        Logging.LogLine("\t" + resultsMessage);
+                                        clientSocket.Send(Encoding.ASCII.GetBytes(resultsMessage));
+                                        Logging.LogLine("---");
+                                        Console.WriteLine(DateTime.Now.ToString("yyyy-dd-mm hh:mm:ss") + " - Replying to client:\n\tInvalid parameters sent.");
                                     }
-                                    //error -3
                                 }
-                                else if(responseMessage.Contains("SOA|NOT-OK|"))
+                                else if(queryTeamresponseMessage.Contains("SOA|NOT-OK|"))
                                 {
+                                    if(queryTeamresponseMessage.Contains("insufficient permissions to run this service"))
+                                    {
+                                        Console.WriteLine("Insufficient permissions!");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("NOT-OK: " + SOA_A1.MessageParser.parseMessage(queryTeamresponseMessage)[3]);
+                                    }
+
                                     //Send error message.
-                                    
+                                    int getErrorNumber = int.Parse(SOA_A1.MessageParser.parseMessage(queryTeamresponseMessage)[2]);
+                                    string resultsMessage = SOA_A1.MessageBuilder.executeServiceReplyError(-4, SOA_A1.MessageParser.parseMessage(queryTeamresponseMessage)[3]);
+                                    Logging.LogLine("Responding to service request :");
+                                    Logging.LogLine("\t" + resultsMessage);
+                                    clientSocket.Send(Encoding.ASCII.GetBytes(resultsMessage));
+                                    Logging.LogLine("---");
                                 }
                             }
                             catch(Exception ex)
                             {
-                                Console.WriteLine(ex.Message);
+                                Console.WriteLine(DateTime.Now.ToString("yyyy-dd-mm hh:mm:ss") + " - Exception: " + ex.Message);
                             }
                         }
-                        //}
-                        
-                        stream.Close();
-                        socket.Close();
+
+                        clientStream.Close();
+                        clientSocket.Shutdown(SocketShutdown.Both);
+                        clientSocket.Close();
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Unhandled Error Occured.");
+                    Logging.LogLine("Unhandled error occured: " + responseMessage);
+                    Console.WriteLine(DateTime.Now.ToString("yyyy-dd-mm hh:mm:ss") + " - Unhandled Error Occured.");
                 }
-                
-
-                //Start waiting for messages.
-
-
-                //Probably do something about ending the app.
-
-
-
-
-                //This is an example.
-                //TaxBreakdown test = PurchaseTotalizer.Calculate("AB", 899.99m);
-                //Console.WriteLine("IsValid: {0}\nSub Total: {1}\nPST: {2}\nHST: {3}\nGST: {4}\nTotal: {5}",
-                //    test.Valid,
-                //    test.Sub_total_amount,
-                //    test.PST_amount,
-                //    test.HST_amount,
-                //    test.GST_amount,
-                //    test.Total_purchase_amount);
-
-
             }
             else
             {
-                Console.WriteLine("Error loading config file.");
+                Logging.LogLine("Error loading config file. Application closing.");
+                Console.WriteLine(DateTime.Now.ToString("yyyy-dd-mm hh:mm:ss") + " - Error loading config file.");
             }
         }
 
-
-
-
+        /// <summary>
+        /// Loads the configuration file and returns a pass or fail value.
+        /// This file will create a default configuration file if one does not exist.
+        /// </summary>
+        /// <returns>If the config was loaded or not.</returns>
         static bool LoadConfig()
         {
             bool status = false;
@@ -227,19 +264,6 @@ namespace SOA_A1_Purchase_Totalizer
                     {
                         status = true;
                     }
-                    else
-                    {
-                        Console.WriteLine("Unable to parse config file.");
-                    }
-
-                    //config_teamID
-                    //config_tagName
-                    //config_teamName
-                    //config_host_ip
-                    //config_host_port
-                    //config_serviceName
-                    //config_securityLevel
-                    //config_description
                 }
             }
             else
@@ -251,7 +275,7 @@ namespace SOA_A1_Purchase_Totalizer
         }
 
         /// <summary>
-        /// Parse the configuration file.
+        /// Parse the configuration file and fill in values.
         /// </summary>
         /// <param name="configString">Config file string.</param>
         /// <returns>If the file was parsed succesfully.</returns>
@@ -300,15 +324,15 @@ namespace SOA_A1_Purchase_Totalizer
                     {
                         config_localPort = int.Parse(twoRats[1]);
                     }
+                    else if (twoRats[0] == "client_ip")
+                    {
+                        config_localIP = twoRats[1].Replace("\r", "");
+                    }
                 }
                 else if(twoRats.Length > 2)
                 {
                     Logging.LogLine("Error in log file cannot have more than one '=' sign: " + line);
                     break;
-                }
-                else
-                {
-                    //Do nothing. It's an empty line we don't care about.
                 }
             }
 
@@ -320,19 +344,23 @@ namespace SOA_A1_Purchase_Totalizer
             return success;
         }
 
-        //Check that all the configuration stuff got added.
+        /// <summary>
+        /// Check that all the configuration stuff got added.
+        /// </summary>
+        /// <returns>Returns pass or fail.</returns>
         static bool CheckAllConfigValuesAreFilledIn()
         {
             bool miaow = false;
-            if (config_teamID != null ||
-                config_tagName != null ||
-                config_teamName != null ||
-                config_host_ip != null ||
-                config_host_port != null ||
-                config_serviceName != null ||
-                config_securityLevel != null ||
-                config_description != null ||
-                config_localPort != null)
+            if (config_teamID != null &&
+                config_tagName != null &&
+                config_teamName != null &&
+                config_host_ip != null &&
+                config_host_port != null &&
+                config_serviceName != null &&
+                config_securityLevel != null &&
+                config_description != null &&
+                config_localPort != null &&
+                config_localIP != null)
             {
                 miaow = true;
             }
@@ -340,6 +368,9 @@ namespace SOA_A1_Purchase_Totalizer
             return miaow;
         }
 
+        /// <summary>
+        /// Create a default configuration file.
+        /// </summary>
         static void CreateConfig()
         {
             string configFileString = @"teamId=
@@ -350,6 +381,7 @@ securityLevel=1
 description=This service totals the cost and tax and displays it broken down.
 host_ip=
 host_port=3128
+client_ip=
 client_port=3000";
             File.WriteAllText(CONFIG_FILE_PATH, configFileString);
             Console.WriteLine("Created config file as none existed. Please fill it out.");

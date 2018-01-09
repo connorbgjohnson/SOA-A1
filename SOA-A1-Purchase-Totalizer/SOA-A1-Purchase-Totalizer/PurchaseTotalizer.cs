@@ -91,7 +91,12 @@ namespace SOA_A1_Purchase_Totalizer
                 valid = false;
             }
 
-            return new TaxBreakdown(valid, value, pst, hst, gst, value + pst + hst + gst);
+            return new TaxBreakdown(valid, 
+                Math.Round(value, 2), 
+                Math.Round(pst, 2), 
+                Math.Round(hst, 2), 
+                Math.Round(gst, 2), 
+                Math.Round(value + pst + hst + gst, 2));
         }
 
         /// <summary>

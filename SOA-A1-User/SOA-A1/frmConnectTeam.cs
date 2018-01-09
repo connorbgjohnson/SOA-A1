@@ -28,6 +28,10 @@ namespace SOA_A1
         public frmConnectTeam()
         {
             InitializeComponent();
+            Logging.LogLine("=======================================================");
+            Logging.LogLine("\t\t\t -- USER APP LOG --");
+            Logging.LogLine("Team:\t: WesNet (Connor Johnson, Lauchlin Morrison, Kyle Kreutzer, Colin Mills");
+            Logging.LogLine("=======================================================");
         }
 
         private void cmdConnect_Click(object sender, EventArgs e)//Button user clicks when trying to connect to the registry
@@ -45,7 +49,8 @@ namespace SOA_A1
 
             Socket regSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);//Socket for the registry
             string[] response = null;//message received broken into parsed segments by |
-            frmServiceSelection frm = new frmServiceSelection();//Next form as an object for building         
+            frmServiceSelection frm = new frmServiceSelection();//Next form as an object for building      
+            frmConnectTeam frmConnect = new frmConnectTeam();
             try
             {
                 port = int.Parse(portString);//turn port from string to int
@@ -63,8 +68,14 @@ namespace SOA_A1
                     regSock.Connect(ip, port);//Connect to the registry
                     //Build register team message
                     teamMessage = MessageBuilder.registerTeam(teamName);//Build the Register Team message
+                    Logging.LogLine("Calling SOA-Registry with message :");
+                    Logging.LogLine("\t" + teamMessage);
                     TCPHelper.sendMessage(teamMessage, regSock);
                     message = TCPHelper.receiveMessage(buffer, regSock);
+                    Logging.LogLine("\tResponse from SOA-Registry :");
+                    Logging.LogLine("\t\t" + message);
+                    Logging.LogLine("---");
+
                     response = MessageParser.parseMessage(message);
                     isOK = MessageParser.checkOK(response[1]);
                     //Check if the respnse is an OK or NOT-OK response
@@ -72,19 +83,22 @@ namespace SOA_A1
                     {                        
                         FormBuilder.buildServiceSelection(teamName, response[2], response[3], ipAddressString, portString, frm);//pull out the new form
                         this.Hide();//put this form away
-                        regSock.Disconnect(true);
                     }
                     else if (isOK == false)
                     {
                         MessageBox.Show("ERROR CODE: " + response[2] + "\n" + response[3]);
-                        regSock.Disconnect(true);
+                        if (response[3].Contains("Team Licence Expired"))
+                        {
+                            frmConnect.Show();
+                            this.Hide();
+                            
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("ERROR:" + ex.Message);
                 }
-                
             }
         }
     }

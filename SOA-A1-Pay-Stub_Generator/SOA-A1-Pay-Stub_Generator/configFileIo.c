@@ -1,7 +1,7 @@
 //
 // Name: configFileIo.c
 // Date: 1/8/2018
-// Programmers: Kyle Kreutzer, Lauchlin Morrison, Colin Mills, Kyle Kreutzer
+// Programmers: Kyle Kreutzer, Lauchlin Morrison, Colin Mills, Connor Johnson
 // Description:
 // Holds methods for reading from a key/value pair configuration file.
 //
