@@ -124,7 +124,13 @@ namespace SOA_A1
                 else if (isOK == false)
                 {
                     MessageBox.Show("ERROR CODE: " + response[2] + "\n" + response[3]);
+                    if (response[3].Contains("Team Licence Expired"))
+                    {
+                        frmConnect.Show();
+                        this.Hide();
+                    }
                 }
+
                 
             }
             catch (Exception ex)

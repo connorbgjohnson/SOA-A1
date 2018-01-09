@@ -32,7 +32,6 @@ namespace SOA_A1
             Logging.LogLine("\t\t\t -- USER APP LOG --");
             Logging.LogLine("Team:\t: WesNet (Connor Johnson, Lauchlin Morrison, Kyle Kreutzer, Colin Mills");
             Logging.LogLine("=======================================================");
-
         }
 
         private void cmdConnect_Click(object sender, EventArgs e)//Button user clicks when trying to connect to the registry
@@ -50,7 +49,8 @@ namespace SOA_A1
 
             Socket regSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);//Socket for the registry
             string[] response = null;//message received broken into parsed segments by |
-            frmServiceSelection frm = new frmServiceSelection();//Next form as an object for building         
+            frmServiceSelection frm = new frmServiceSelection();//Next form as an object for building      
+            frmConnectTeam frmConnect = new frmConnectTeam();
             try
             {
                 port = int.Parse(portString);//turn port from string to int
@@ -89,6 +89,11 @@ namespace SOA_A1
                     {
                         MessageBox.Show("ERROR CODE: " + response[2] + "\n" + response[3]);
                         regSock.Disconnect(true);
+                        if (response[3].Contains("Team Licence Expired"))
+                        {
+                            frmConnect.Show();
+                            this.Hide();
+                        }
                     }
                 }
                 catch (Exception ex)

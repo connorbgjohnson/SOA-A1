@@ -52,11 +52,12 @@
             this.txtRegistryPort = new System.Windows.Forms.TextBox();
             this.flpArgs = new System.Windows.Forms.FlowLayoutPanel();
             this.flpResps = new System.Windows.Forms.FlowLayoutPanel();
+            this.cmdBack = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // cmdDisconnect
             // 
-            this.cmdDisconnect.Location = new System.Drawing.Point(98, 469);
+            this.cmdDisconnect.Location = new System.Drawing.Point(180, 468);
             this.cmdDisconnect.Name = "cmdDisconnect";
             this.cmdDisconnect.Size = new System.Drawing.Size(75, 23);
             this.cmdDisconnect.TabIndex = 0;
@@ -258,11 +259,22 @@
             this.flpResps.Size = new System.Drawing.Size(523, 222);
             this.flpResps.TabIndex = 25;
             // 
+            // cmdBack
+            // 
+            this.cmdBack.Location = new System.Drawing.Point(99, 468);
+            this.cmdBack.Name = "cmdBack";
+            this.cmdBack.Size = new System.Drawing.Size(75, 23);
+            this.cmdBack.TabIndex = 26;
+            this.cmdBack.Text = "Go Back";
+            this.cmdBack.UseVisualStyleBackColor = true;
+            this.cmdBack.Click += new System.EventHandler(this.cmdBack_Click);
+            // 
             // frmSelectedService
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 501);
+            this.Controls.Add(this.cmdBack);
             this.Controls.Add(this.flpResps);
             this.Controls.Add(this.flpArgs);
             this.Controls.Add(this.txtRegistryPort);
@@ -320,5 +332,6 @@
         public System.Windows.Forms.TextBox txtRegistryPort;
         public System.Windows.Forms.FlowLayoutPanel flpArgs;
         public System.Windows.Forms.FlowLayoutPanel flpResps;
+        private System.Windows.Forms.Button cmdBack;
     }
 }

@@ -228,5 +228,16 @@ namespace SOA_A1
                 MessageBox.Show(ex.Message);
             }
         }
+
+        private void cmdBack_Click(object sender, EventArgs e)
+        {
+            string teamName = txtTeamName.Text;
+            string teamID = txtTeamID.Text;
+            string serviceName = txtServiceName.Text;
+            frmServiceSelection frm = new frmServiceSelection();
+            FormBuilder.buildServiceSelection(teamName, teamID, txtExpiration.Text, txtRegistryIP.Text, txtRegistryPort.Text, frm);
+            
+            this.Hide();
+        }
     }
 }
