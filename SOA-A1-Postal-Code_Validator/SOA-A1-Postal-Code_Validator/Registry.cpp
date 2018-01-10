@@ -31,7 +31,8 @@ void Registry::Connect(const char* registryIp, int registryPort)
 	/* Create socket */
 	if ((_socket = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
 	{
-		printf("Could not create socket : %d", WSAGetLastError());
+		LogFile::Log("Could not create socket. Error Code: " +
+			WSAGetLastError(), DEFAULT_LOG_PATH);
 		exit(-1);
 	}
 
@@ -43,7 +44,8 @@ void Registry::Connect(const char* registryIp, int registryPort)
 	/* Attempt connection to server */
 	if (connect(_socket, (struct sockaddr*)&server, sizeof(server)) < 0)
 	{
-		printf("Failed to connect to registry.");
+		LogFile::Log("Failed to connect to registry. Error Code: " +
+			WSAGetLastError(), DEFAULT_LOG_PATH);
 		exit(-1);
 	}
 }
@@ -69,6 +71,9 @@ bool Registry::QueryTeam(const char* message, std::string& responseMessage)
 	SendMessageToRegistry(queryString.c_str());
 	responseMessage = GetResponse();
 	Disconnect();
+
+	LogFile::Log("Calling SOA-Registry with message:\n" + queryString + 
+		"\nResponse from SOA-Registry:\n" + responseMessage, DEFAULT_LOG_PATH);
 
 	if (responseMessage.find("NOT-OK") != std::string::npos)
 	{
@@ -108,6 +113,9 @@ bool Registry::PublishService(ConfigReader& configReader)
 	SendMessageToRegistry(publishMessageStr.c_str());
 
 	std::string response = GetResponse();
+	LogFile::Log("Calling SOA-Registry with message:\n" + publishMessageStr +
+		"\nResponse from SOA-Registry:\n" + response, DEFAULT_LOG_PATH);
+
 	if (response.find("has already published service") != std::string::npos)
 	{
 		success = true;

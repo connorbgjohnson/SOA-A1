@@ -1,3 +1,9 @@
+///Project: SOA-A1-Postal-Code_Validator
+///File: LogFile.cpp
+///Date: 2018/01/04
+///Author: Kyle Kreutzer
+///Holds class definition for the log file.
+
 #pragma once
 #pragma warning(disable:4996)
 
@@ -9,7 +15,7 @@
 #define DEFAULT_LOG_PATH "log.txt"
 
 /// <summary>
-/// Used to read/write to a log file.
+/// Static class used for writing string content to a log file.
 /// </summary>
 class LogFile
 {

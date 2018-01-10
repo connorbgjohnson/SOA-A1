@@ -16,18 +16,24 @@ using namespace PostalCode;
 
 int main(int, char*[])
 {
+	/* Get configuration options */
+	ConfigReader cfgReader = ConfigReader("config.cfg");
+	
+	/* Log team information to Run-Time log */
+	LogFile::Log("========================================================================\n" +
+		std::string("Team    : WesNet (Kyle K, Lauchlin M, Connor J, Colin M)\n") +
+				    "Tag-Name: POSTAL\nService : CadPostalValidator\n" + 
+				"========================================================================\n",
+				DEFAULT_LOG_PATH);
+
 	/* Initialize winsock */
 	WSADATA wsa = { 0 };
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 	{
-		printf("Failed. Error Code : %d", WSAGetLastError());
+		LogFile::Log("Failed to initialize Winsock. Error Code:" +
+			WSAGetLastError(), DEFAULT_LOG_PATH);
 		exit(-1);
 	}
-
-	LogFile::Log("This\nis\na\ntest", DEFAULT_LOG_PATH);
-
-	/* Get configuration options */
-	ConfigReader cfgReader = ConfigReader("config.cfg");
 
 	/* Connect to registry */
 	Registry registry = Registry();

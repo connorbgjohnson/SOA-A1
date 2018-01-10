@@ -17,6 +17,12 @@
 #include <string>
 #include <thread>
 #include <winsock2.h>
+#include <sstream>
+#include <vector>
+#include <iterator>
+#include "split.h"
+#include "PostalCode.h"
+#include "LogFile.h"
 #include "Registry.h"
 
 #pragma comment(lib,"ws2_32.lib") //Winsock Library

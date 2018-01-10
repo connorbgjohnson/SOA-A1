@@ -6,12 +6,7 @@
 
 
 #include "PostalCodeService.h"
-#include <string>
-#include <sstream>
-#include <vector>
-#include <iterator>
-#include "split.h"
-#include "PostalCode.h"
+
 
 /// <summary>
 /// Creates a new instance of the PostalCodeService class.
@@ -45,8 +40,8 @@ void PostalCodeService::BuildSocket()
 	int iResult = getaddrinfo(NULL, _port.c_str(), &hints, &result);
 	if (iResult != 0)
 	{
-		printf("getaddrinfo failed: %d\n", iResult);
-		int error = WSAGetLastError();
+		LogFile::Log("Failed to resolve local address and port. Error Code:"
+			+ WSAGetLastError(), DEFAULT_LOG_PATH);
 		WSACleanup();
 		exit(-1);
 	}
@@ -54,7 +49,8 @@ void PostalCodeService::BuildSocket()
 	_listenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
 	if (_listenSocket == INVALID_SOCKET)
 	{
-		printf("Error at socket(): %ld\n", WSAGetLastError());
+		LogFile::Log("Error assigning socket. Error Code: " +
+			WSAGetLastError(), DEFAULT_LOG_PATH);
 		freeaddrinfo(result);
 		WSACleanup();
 		exit(-1);
@@ -62,7 +58,8 @@ void PostalCodeService::BuildSocket()
 
 	iResult = bind(_listenSocket, result->ai_addr, (int)result->ai_addrlen);
 	if (iResult == SOCKET_ERROR) {
-		printf("bind failed with error: %d\n", WSAGetLastError());
+		LogFile::Log("Failed to bind to socket. Error Code: "
+			+ WSAGetLastError(), DEFAULT_LOG_PATH);
 		freeaddrinfo(result);
 		closesocket(_listenSocket);
 		WSACleanup();
@@ -73,7 +70,8 @@ void PostalCodeService::BuildSocket()
 
 	if (listen(_listenSocket, SOMAXCONN) == SOCKET_ERROR)
 	{
-		printf("Listen failed with error: %ld\n", WSAGetLastError());
+		LogFile::Log("Failed to listen on socket. Error Code: "
+			+ WSAGetLastError(), DEFAULT_LOG_PATH);
 		closesocket(_listenSocket);
 		WSACleanup();
 		exit(-1);
@@ -105,13 +103,15 @@ void PostalCodeService::Start()
 		SOCKET clientSocket = accept(_listenSocket, NULL, NULL);
 		if (clientSocket == INVALID_SOCKET)
 		{
-			printf("accept failed: %d\n", WSAGetLastError());
+			LogFile::Log("Accept Failed. Error Code:" +
+				WSAGetLastError(), DEFAULT_LOG_PATH);
 			closesocket(_listenSocket);
 			WSACleanup();
 			exit(-1);
 		}
 
 		recv(clientSocket, receivedMessge, 3000, 0);
+		LogFile::Log("Receiving Service Request:\n" + std::string(receivedMessge), DEFAULT_LOG_PATH);
 
 		bool querySuccess = _registry.QueryTeam(receivedMessge, responseMessage);
 		if (!querySuccess)
@@ -119,6 +119,7 @@ void PostalCodeService::Start()
 			std::vector<std::string> errStrings = split(responseMessage, '|');
 			std::string errString = "\vPUB|NOT-OK|" + errString.at(2) + '|' + errString.at(3) + '|' + '|' + EOS + EOM + EOS;
 			send(clientSocket, errString.c_str(), (int)errString.length(), 0);
+			LogFile::Log("Responding to Service Request:\n" + errString, DEFAULT_LOG_PATH);
 		}
 		else
 		{
@@ -131,6 +132,7 @@ void PostalCodeService::Start()
 			"RSP|2|SpecialNotes|STRING|" + specialNote + '|' + EOS + EOM + EOS + '\0';
 
 			send(clientSocket, goodResponseStr.c_str(), (int)goodResponseStr.length(), 0);
+			LogFile::Log("Responding to Service Request:\n" + goodResponseStr, DEFAULT_LOG_PATH);
 		}
 
 

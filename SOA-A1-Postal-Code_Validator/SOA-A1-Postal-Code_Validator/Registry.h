@@ -34,7 +34,7 @@ private:
 	SOCKET _socket;
 	ConfigReader _configReader;
 	bool Registry::SendMessageToRegistry(const char* message);
-    std::string GetResponse();
+	std::string GetResponse();
 	
 
 public:
