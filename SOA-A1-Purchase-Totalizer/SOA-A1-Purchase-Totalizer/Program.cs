@@ -161,37 +161,49 @@ namespace SOA_A1_Purchase_Totalizer
                                 {
                                     Console.WriteLine("Team is OK!");
 
-                                    //Perform calculations and send response message.
-                                    TaxBreakdown results = PurchaseTotalizer.Calculate(clientProvinceCode, clientPurchaseValue);
-                                    if(results.Valid)
+                                    if(clientPurchaseValue >= 0)
                                     {
-                                        string resultsMessage = SOA_A1.MessageBuilder.executeServiceReply(
-                                            "RSP|1|SubTotalAmount|float|" + results.Sub_total_amount + "|",
-                                            "RSP|2|PSTamount|float|" + results.PST_amount + "|",
-                                            "RSP|3|HSTamount|float|" + results.HST_amount +"|",
-                                            "RSP|4|GSTamount|float|" + results.GST_amount +"|",
-                                            "RSP|5|TotalPurchaseAmount|float|" + results.Total_purchase_amount +"|");
-                                        Logging.LogLine("Responding to service request :");
-                                        Logging.LogLine("\t" + resultsMessage);
-                                        clientSocket.Send(Encoding.ASCII.GetBytes(resultsMessage));
-                                        Logging.LogLine("---");
-                                        Console.WriteLine(DateTime.Now.ToString("yyyy-dd-mm hh:mm:ss") +
-                                            " - Replying to client:\n\tFrom Client:\n\t\tProvinceOrTerritory=" + clientProvinceCode +
-                                            "\n\t\tPurchaseValue=" + clientPurchaseValue +
-                                            "\n\tTo Client: SubTotalAmount=" + results.Sub_total_amount +
-                                            "\n\t\tPSTamount=" + results.PST_amount +
-                                            "\n\t\tHSTamount=" + results.HST_amount +
-                                            "\n\t\tGSTamount=" + results.GST_amount +
-                                            "\n\t\tTotalPurchaseAmount=" + results.Total_purchase_amount);
+                                        //Perform calculations and send response message.
+                                        TaxBreakdown results = PurchaseTotalizer.Calculate(clientProvinceCode, clientPurchaseValue);
+                                        if(results.Valid)
+                                        {
+                                            string resultsMessage = SOA_A1.MessageBuilder.executeServiceReply(
+                                                "RSP|1|SubTotalAmount|float|" + results.Sub_total_amount + "|",
+                                                "RSP|2|PSTamount|float|" + results.PST_amount + "|",
+                                                "RSP|3|HSTamount|float|" + results.HST_amount +"|",
+                                                "RSP|4|GSTamount|float|" + results.GST_amount +"|",
+                                                "RSP|5|TotalPurchaseAmount|float|" + results.Total_purchase_amount +"|");
+                                            Logging.LogLine("Responding to service request :");
+                                            Logging.LogLine("\t" + resultsMessage);
+                                            clientSocket.Send(Encoding.ASCII.GetBytes(resultsMessage));
+                                            Logging.LogLine("---");
+                                            Console.WriteLine(DateTime.Now.ToString("yyyy-dd-mm hh:mm:ss") +
+                                                " - Replying to client:\n\tFrom Client:\n\t\tProvinceOrTerritory=" + clientProvinceCode +
+                                                "\n\t\tPurchaseValue=" + clientPurchaseValue +
+                                                "\n\tTo Client: SubTotalAmount=" + results.Sub_total_amount +
+                                                "\n\t\tPSTamount=" + results.PST_amount +
+                                                "\n\t\tHSTamount=" + results.HST_amount +
+                                                "\n\t\tGSTamount=" + results.GST_amount +
+                                                "\n\t\tTotalPurchaseAmount=" + results.Total_purchase_amount);
+                                        }
+                                        else
+                                        {
+                                            string resultsMessage = SOA_A1.MessageBuilder.executeServiceReplyError(-3, "Invalid parameters sent. Ensure province code is correct.");
+                                            Logging.LogLine("Responding to service request :");
+                                            Logging.LogLine("\t" + resultsMessage);
+                                            clientSocket.Send(Encoding.ASCII.GetBytes(resultsMessage));
+                                            Logging.LogLine("---");
+                                            Console.WriteLine(DateTime.Now.ToString("yyyy-dd-mm hh:mm:ss") + " - Replying to client:\n\tInvalid parameters sent. Postal code error.");
+                                        }
                                     }
                                     else
                                     {
-                                        string resultsMessage = SOA_A1.MessageBuilder.executeServiceReplyError(-3, "Invalid parameters sent.");
+                                        string resultsMessage = SOA_A1.MessageBuilder.executeServiceReplyError(-3, "Invalid parameters sent. Ensure the purchase value is a non negative value.");
                                         Logging.LogLine("Responding to service request :");
                                         Logging.LogLine("\t" + resultsMessage);
                                         clientSocket.Send(Encoding.ASCII.GetBytes(resultsMessage));
                                         Logging.LogLine("---");
-                                        Console.WriteLine(DateTime.Now.ToString("yyyy-dd-mm hh:mm:ss") + " - Replying to client:\n\tInvalid parameters sent.");
+                                        Console.WriteLine(DateTime.Now.ToString("yyyy-dd-mm hh:mm:ss") + " - Replying to client:\n\tInvalid parameters sent. Negative number.");
                                     }
                                 }
                                 else if(queryTeamresponseMessage.Contains("SOA|NOT-OK|"))
