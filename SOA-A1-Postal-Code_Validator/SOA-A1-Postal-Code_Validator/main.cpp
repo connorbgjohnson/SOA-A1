@@ -9,6 +9,7 @@
 #include "ConfigReader.h"
 #include "Registry.h"
 #include "PostalCodeService.h"
+#include "LogFile.h"
 
 using namespace std;
 using namespace PostalCode;
@@ -22,6 +23,8 @@ int main(int, char*[])
 		printf("Failed. Error Code : %d", WSAGetLastError());
 		exit(-1);
 	}
+
+	LogFile::Log("This\nis\na\ntest", DEFAULT_LOG_PATH);
 
 	/* Get configuration options */
 	ConfigReader cfgReader = ConfigReader("config.cfg");
